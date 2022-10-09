@@ -7,7 +7,7 @@ import { RssItem, SearchResult } from "../models/rss-item";
 import { API_URL } from "../utils/constants";
 
 export const fetcher = (url: string, query: string) =>
-  fetch(`${url}/query?q=${query}`).then((res) => res.json());
+  fetch(`${url}/search?q=${query}`).then((res) => res.json());
 
 const Item: React.FC<{ item: RssItem }> = ({ item }) => {
   return (
