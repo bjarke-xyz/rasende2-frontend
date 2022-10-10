@@ -67,7 +67,7 @@ const Home: NextPage = () => {
           </div>
           <div className="flex flex-col m-4 mt-8">
             <p className="text-lg font-bold">Tidligere raserier:</p>
-            {data.items.map((item) => (
+            {data.items.slice(1).map((item) => (
               <div key={item.itemId}>
                 <Item item={item} />
               </div>
