@@ -1,13 +1,30 @@
 import { format, formatDistanceStrict, parseISO } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
+import {
+  datasets,
+  labels,
+  RasendeChart,
+  RasendeChartProps,
+} from "../components/chart";
 import { RssItem, SearchResult } from "../models/rss-item";
 import { API_URL } from "../utils/constants";
 
-export const fetcher = (url: string, query: string) =>
-  fetch(`${url}/search?q=${query}`).then((res) => res.json());
+export const fetcher = (url: string, resource: string, query: string) =>
+  fetch(`${url}/${resource}?q=${query}`).then((res) => res.json());
+
+const Centered: React.FC<{ children: React.ReactNode; size: number }> = ({
+  children,
+  size,
+}) => {
+  return (
+    <div className="flex justify-center">
+      <div className={`text-${size}xl leading-relaxed`}>{children}</div>
+    </div>
+  );
+};
 
 const Item: React.FC<{ item: RssItem }> = ({ item }) => {
   return (
@@ -19,7 +36,16 @@ const Item: React.FC<{ item: RssItem }> = ({ item }) => {
 
 const Home: NextPage = () => {
   const [queryParam, setQueryParam] = useState<string>("rase");
-  const { data, error } = useSWR<SearchResult>([API_URL, queryParam], fetcher);
+  const { data, error } = useSWR<SearchResult>(
+    [API_URL, "search", queryParam],
+    fetcher
+  );
+
+  const { data: chartData } = useSWR<RasendeChartProps>(
+    [API_URL, "charts", queryParam],
+    fetcher
+  );
+  console.log(chartData);
 
   const [now, setNow] = useState(new Date());
   useEffect(() => {
@@ -34,37 +60,27 @@ const Home: NextPage = () => {
       {error && <p>Der skete en fejl :(</p>}
       {!error && data && (
         <div>
-          <div className="flex justify-center">
-            <div className="text-5xl">
-              <p>Seneste raseri:</p>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <div className="text-3xl">
-              {data.items.length === 0 && <p>Ingen raseri!</p>}
-              {data.items.length > 0 && (
-                <div>
-                  <Item item={data.items[0]} />
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <div className="text-3xl">
-              {data.items.length > 0 && (
-                <div>
-                  {formatDistanceStrict(
-                    now,
-                    parseISO(data.items[0].published),
-                    {
-                      locale: daLocale,
-                    }
-                  )}{" "}
-                  siden
-                </div>
-              )}
-            </div>
-          </div>
+          <Centered size={3}>
+            <p>Seneste raseri:</p>
+          </Centered>
+          <Centered size={5}>
+            {data.items.length === 0 && <p>Ingen raseri!</p>}
+            {data.items.length > 0 && (
+              <div>
+                <Item item={data.items[0]} />
+              </div>
+            )}
+          </Centered>
+          <Centered size={3}>
+            {data.items.length > 0 && (
+              <div>
+                {formatDistanceStrict(now, parseISO(data.items[0].published), {
+                  locale: daLocale,
+                })}{" "}
+                siden
+              </div>
+            )}
+          </Centered>
           <div className="flex flex-col m-4 mt-8">
             <p className="text-lg font-bold">Tidligere raserier:</p>
             {data.items.slice(1).map((item) => (
@@ -72,6 +88,9 @@ const Home: NextPage = () => {
                 <Item item={item} />
               </div>
             ))}
+          </div>
+          <div className="m-4 mt-8">
+            {chartData && <RasendeChart {...chartData} />}
           </div>
         </div>
       )}
