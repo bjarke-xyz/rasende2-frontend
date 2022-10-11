@@ -7,8 +7,15 @@ import { RasendeChart, RasendeChartProps } from "../components/chart";
 import { RssItem, SearchResult } from "../models/rss-item";
 import { API_URL } from "../utils/constants";
 
-export const fetcher = (url: string, resource: string, query: string) =>
-  fetch(`${url}/${resource}?q=${query}`).then((res) => res.json());
+export const fetcher = (
+  url: string,
+  resource: string,
+  query: string,
+  limit: number
+) =>
+  fetch(`${url}/${resource}?q=${query}&limit=${limit}`).then((res) =>
+    res.json()
+  );
 
 const Centered: React.FC<{ children: React.ReactNode; size: number }> = ({
   children,
@@ -32,7 +39,7 @@ const Item: React.FC<{ item: RssItem }> = ({ item }) => {
 const Home: NextPage = () => {
   const [queryParam, setQueryParam] = useState<string>("rase");
   const { data, error } = useSWR<SearchResult>(
-    [API_URL, "search", queryParam],
+    [API_URL, "search", queryParam, 10],
     fetcher
   );
 
