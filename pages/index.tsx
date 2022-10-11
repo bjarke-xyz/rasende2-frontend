@@ -1,14 +1,9 @@
-import { format, formatDistanceStrict, parseISO } from "date-fns";
+import { formatDistanceStrict, parseISO } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import type { NextPage } from "next";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
-import {
-  datasets,
-  labels,
-  RasendeChart,
-  RasendeChartProps,
-} from "../components/chart";
+import { RasendeChart, RasendeChartProps } from "../components/chart";
 import { RssItem, SearchResult } from "../models/rss-item";
 import { API_URL } from "../utils/constants";
 
@@ -45,7 +40,6 @@ const Home: NextPage = () => {
     [API_URL, "charts", queryParam],
     fetcher
   );
-  console.log(chartData);
 
   const [now, setNow] = useState(new Date());
   useEffect(() => {

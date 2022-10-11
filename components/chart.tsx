@@ -1,19 +1,24 @@
 import {
-  Chart as ChartJS,
+  ArcElement,
   CategoryScale,
+  Chart as ChartJS,
+  ChartOptions,
+  ChartTypeRegistry,
+  Legend,
   LinearScale,
-  PointElement,
+  LineController,
   LineElement,
+  PieController,
+  PointElement,
+  registerables as registerablesJS,
   Title,
   Tooltip,
-  Legend,
-  ChartOptions,
-  ArcElement,
-  ChartTypeRegistry,
 } from "chart.js";
-import { Chart, Line } from "react-chartjs-2";
+import { Chart } from "react-chartjs-2";
 
 ChartJS.register(
+  LineController,
+  PieController,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -23,6 +28,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
 const plugin = {
   id: "custom_canvas_background_color",
   beforeDraw: (chart: any) => {
