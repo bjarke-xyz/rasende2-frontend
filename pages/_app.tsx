@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "../hooks/theme-context";
 import { Footer } from "../components/footer";
+import { Header } from "../components/header";
 
 export type Fueltype = "unleaded95" | "diesel" | "octane100";
 
@@ -23,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     return (
       <ThemeProvider>
         <div className="h-screen flex flex-col">
-          {/* <Header fueltype={fueltype} setFueltype={setFueltype} /> */}
+          <Header />
           <main className="mb-auto mt-10">
             <Component {...pageProps} />
           </main>

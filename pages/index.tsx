@@ -3,41 +3,15 @@ import daLocale from "date-fns/locale/da";
 import type { NextPage } from "next";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
+import { Centered } from "../components/centered";
 import { RasendeChart, RasendeChartProps } from "../components/chart";
+import { ItemLink } from "../components/item-link";
 import { RssItem, SearchResult } from "../models/rss-item";
 import { API_URL } from "../utils/constants";
-
-export const fetcher = (
-  url: string,
-  resource: string,
-  query: string,
-  limit: number
-) =>
-  fetch(`${url}/${resource}?q=${query}&limit=${limit}`).then((res) =>
-    res.json()
-  );
-
-const Centered: React.FC<{ children: React.ReactNode; size: number }> = ({
-  children,
-  size,
-}) => {
-  return (
-    <div className="flex justify-center">
-      <div className={`text-${size}xl leading-relaxed`}>{children}</div>
-    </div>
-  );
-};
-
-const Item: React.FC<{ item: RssItem }> = ({ item }) => {
-  return (
-    <a href={item.link} className="hover:underline">
-      {item.siteName}: {item.title}
-    </a>
-  );
-};
+import { fetcher } from "../utils/fetcher";
 
 const Home: NextPage = () => {
-  const [queryParam, setQueryParam] = useState<string>("rase");
+  const [queryParam, setQueryParam] = useState<string>("rasende");
   const { data, error } = useSWR<SearchResult>(
     [API_URL, "search", queryParam, 10],
     fetcher
@@ -57,22 +31,22 @@ const Home: NextPage = () => {
   }, []);
 
   return (
-    <div>
+    <div className="m-4">
       {error && <p>Der skete en fejl :(</p>}
       {!error && data && (
         <div>
-          <Centered size={3}>
+          <Centered>
             <p>Seneste raseri:</p>
           </Centered>
-          <Centered size={5}>
+          <Centered bigText>
             {data.items.length === 0 && <p>Ingen raseri!</p>}
             {data.items.length > 0 && (
               <div>
-                <Item item={data.items[0]} />
+                <ItemLink item={data.items[0]} />
               </div>
             )}
           </Centered>
-          <Centered size={3}>
+          <Centered>
             {data.items.length > 0 && (
               <div>
                 {formatDistanceStrict(now, parseISO(data.items[0].published), {
@@ -86,11 +60,11 @@ const Home: NextPage = () => {
             <p className="text-lg font-bold">Tidligere raserier:</p>
             {data.items.slice(1).map((item) => (
               <div key={item.itemId}>
-                <Item item={item} />
+                <ItemLink item={item} />
               </div>
             ))}
           </div>
-          <div className="m-4 mt-8">
+          <div className="mt-8">
             {chartData && <RasendeChart {...chartData} />}
           </div>
         </div>
