@@ -4,7 +4,9 @@ export const Centered: React.FC<{
 }> = ({ children, bigText }) => {
   return (
     <div className="flex justify-center">
-      <div className={bigText ? `text-5xl` : "text-3xl"}>{children}</div>
+      <div className={`${bigText ? "text-5xl" : "text-3xl"} leading-relaxed`}>
+        {children}
+      </div>
     </div>
   );
 };

@@ -32,7 +32,7 @@ const Search: NextPage = () => {
         <div className="flex flex-row align-middle space-x-2">
           <input
             defaultValue={defaultValue}
-            className="p-1 block border border-solid border-gray-300 rounded-md"
+            className="p-1 block border border-solid border-gray-300 rounded-md dark: text-slate-900"
             onChange={(e) => {
               debouncedEventHandler(e);
             }}
