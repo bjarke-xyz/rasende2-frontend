@@ -1,12 +1,13 @@
 import { formatDistanceStrict, parseISO } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import type { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import Head from "next/head";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { Centered } from "../components/centered";
 import { RasendeChart, RasendeChartProps } from "../components/chart";
 import { ItemLink } from "../components/item-link";
-import { RssItem, SearchResult } from "../models/rss-item";
+import { SearchResult } from "../models/rss-item";
 import { API_URL } from "../utils/constants";
 import { fetcher } from "../utils/fetcher";
 
@@ -32,6 +33,9 @@ const Home: NextPage = () => {
 
   return (
     <div className="m-4">
+      <Head>
+        <title>Raseri i de danske medier | Rasende</title>
+      </Head>
       {error && <p>Der skete en fejl :(</p>}
       {!error && data && (
         <div>
@@ -48,7 +52,7 @@ const Home: NextPage = () => {
           </Centered>
           <Centered>
             {data.items.length > 0 && (
-              <div>
+              <div title={data.items[0].published}>
                 {formatDistanceStrict(now, parseISO(data.items[0].published), {
                   locale: daLocale,
                 })}{" "}

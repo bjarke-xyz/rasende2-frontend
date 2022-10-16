@@ -8,6 +8,7 @@ import { API_URL } from "../utils/constants";
 import { fetcher } from "../utils/fetcher";
 import debounce from "lodash.debounce";
 import { RasendeChart, RasendeChartProps } from "../components/chart";
+import Head from "next/head";
 
 const defaultValue = "rasende";
 
@@ -28,6 +29,9 @@ const Search: NextPage = () => {
   const debouncedEventHandler = useMemo(() => debounce(eventHandler, 300), []);
   return (
     <div className="m-4">
+      <Head>
+        <title>Søg | Rasende</title>
+      </Head>
       <div className="flex justify-center">
         <div className="flex flex-row align-middle space-x-2">
           <input

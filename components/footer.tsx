@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
     <footer className="p-2">
       <div className="flex flex-row justify-around text-sm">
         <div>
-          Inspireret af:{" "}
+          Inspireret af{" "}
           <a
             className="underline"
             href="https://web.archive.org/web/20200628061846/https://rasende.dk/"
