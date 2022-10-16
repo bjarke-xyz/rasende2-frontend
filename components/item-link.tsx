@@ -1,9 +1,10 @@
 import { RssItem } from "../models/rss-item";
+import { Badge } from "./badge";
 
 export const ItemLink: React.FC<{ item: RssItem }> = ({ item }) => {
   return (
     <a href={item.link} className="hover:underline">
-      {item.siteName}: {item.title}
+      <Badge text={item.siteName} /> {item.title}
     </a>
   );
 };
