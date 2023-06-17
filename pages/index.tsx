@@ -37,7 +37,7 @@ const Home: NextPage = () => {
         <title>Raseri i de danske medier | Rasende</title>
       </Head>
       {error && <p>Der skete en fejl :(</p>}
-      {!error && data && (
+      {!error && data && data.items && (
         <div>
           <Centered>
             <p>Seneste raseri:</p>
