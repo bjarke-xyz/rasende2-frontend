@@ -2,12 +2,16 @@ import { NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import useSWR from "swr";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { API_URL } from "../utils/constants";
 import { siteFetcher } from "../utils/fetcher";
 
 interface ContentEvent {
   Content: string;
 }
+
+class RetriableError extends Error {}
+class FatalError extends Error {}
 
 const TitleGenerator: NextPage = () => {
   const [sseStarted, setSseStarted] = useState(false);
@@ -24,19 +28,42 @@ const TitleGenerator: NextPage = () => {
       return;
     }
     setSseStarted(true);
-    const sse = new EventSource(
-      `${API_URL}/generate-titles?siteName=${siteName}`
-    );
-    sse.onmessage = (e) => {
-      const event = JSON.parse(e.data) as ContentEvent;
-      if (event.Content) {
-        setTitles((oldTitles) => oldTitles + event.Content);
-      }
-    };
-    sse.onerror = () => {
-      sse.close();
-      setSseStarted(false);
-    };
+    try {
+      const ctrl = new AbortController();
+      fetchEventSource(`${API_URL}/generate-titles?siteName=${siteName}`, {
+        async onopen(response) {
+          if (response.ok) {
+            return;
+          } else if (response.status == 429) {
+            throw new RetriableError("Try again later");
+          } else {
+            throw new FatalError("Error connecting");
+          }
+        },
+        onmessage(ev) {
+          const event = JSON.parse(ev.data) as ContentEvent;
+          if (event.Content) {
+            setTitles((oldTitles) => oldTitles + event.Content);
+          }
+        },
+        onerror(err) {
+          ctrl.abort();
+          setSseStarted(false);
+          if (err instanceof FatalError || err instanceof RetriableError) {
+            if (err instanceof RetriableError) {
+              alert("Prøv igen om lidt");
+            }
+            throw err; // rethrow to stop the operation
+          }
+        },
+        onclose() {
+          setSseStarted(false);
+        },
+        signal: ctrl.signal,
+      });
+    } catch (error) {
+      console.log("caught error", error);
+    }
   };
   const loadMore = () => {
     setTitles((oldTitles) => oldTitles + "\n");
@@ -81,9 +108,12 @@ const TitleGenerator: NextPage = () => {
             </button>
           ) : null}
         </div>
-        {titles.split("\n").map((line, i) => (
-          <p key={i}>{line}</p>
-        ))}
+        {titles
+          .split("\n")
+          .filter((line) => !!line?.trim())
+          .map((line, i) => (
+            <p key={i}>- {line}</p>
+          ))}
 
         {sseStarted ? <p className="animate-pulse">- ...</p> : ""}
       </div>
