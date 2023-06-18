@@ -22,6 +22,7 @@ const TitleGenerator: NextPage = () => {
   const { data: sites } = useSWR<string[]>([API_URL, "sites"], siteFetcher);
   const [site, setSite] = useState("");
   const [numberOfPages, setNumberOfPages] = useState(0);
+  const [temperature, setTemperature] = useState(0.5);
   const onSiteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSite(e.target.value);
     setTitles("");
@@ -38,7 +39,7 @@ const TitleGenerator: NextPage = () => {
       fetchEventSource(
         `${API_URL}/generate-titles?siteName=${siteName}&offset=${
           limit * page
-        }&limit=${limit}`,
+        }&limit=${limit}&temperature=${temperature}`,
         {
           async onopen(response) {
             if (response.ok) {
@@ -109,6 +110,20 @@ const TitleGenerator: NextPage = () => {
                   <option key={site}>{site}</option>
                 ))}
               </select>
+            </div>
+            <div className="mt-2 flex flex-col">
+              <label htmlFor="slider">Temperature</label>
+              <input
+                id="slider"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setTemperature(parseFloat(e.target.value))
+                }
+                value={temperature}
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+              ></input>
             </div>
           </div>
         </div>
