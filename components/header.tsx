@@ -20,6 +20,15 @@ export const Header: React.FC = () => {
             <a className={currentRoute === "/search" ? "font-bold" : ""}>Søg</a>
           </Link>
         </div>
+        <div>
+          <Link href="/title-generator">
+            <a
+              className={currentRoute === "/title-generator" ? "font-bold" : ""}
+            >
+              Fake News Generator
+            </a>
+          </Link>
+        </div>
       </div>
     </div>
   );
