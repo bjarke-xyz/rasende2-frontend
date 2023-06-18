@@ -57,6 +57,9 @@ const TitleGenerator: NextPage = () => {
                 onChange={onSiteChange}
                 disabled={sseStarted}
               >
+                <option value="" selected disabled>
+                  Vælg
+                </option>
                 {(sites ?? []).map((site) => (
                   <option key={site}>{site}</option>
                 ))}
