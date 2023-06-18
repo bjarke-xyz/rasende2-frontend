@@ -60,6 +60,7 @@ const TitleGenerator: NextPage = () => {
           setSseStarted(false);
         },
         signal: ctrl.signal,
+        openWhenHidden: true,
       });
     } catch (error) {
       console.log("caught error", error);
