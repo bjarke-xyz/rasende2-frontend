@@ -51,7 +51,7 @@ const TitleGenerator: NextPage = () => {
           setSseStarted(false);
           if (err instanceof FatalError || err instanceof RetriableError) {
             if (err instanceof RetriableError) {
-              alert("Prøv igen om lidt");
+              alert("For mange forespørgsler, prøv igen om lidt");
             }
             throw err; // rethrow to stop the operation
           }
