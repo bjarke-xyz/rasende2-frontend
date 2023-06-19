@@ -14,7 +14,7 @@ interface ContentEvent {
 class RetriableError extends Error {}
 class FatalError extends Error {}
 
-const limit = 300;
+const limit = 200;
 
 const TitleGenerator: NextPage = () => {
   const [sseStarted, setSseStarted] = useState(false);
@@ -22,7 +22,7 @@ const TitleGenerator: NextPage = () => {
   const { data: sites } = useSWR<string[]>([API_URL, "sites"], siteFetcher);
   const [site, setSite] = useState("");
   const [numberOfPages, setNumberOfPages] = useState(0);
-  const [temperature, setTemperature] = useState(0.5);
+  const [temperature, setTemperature] = useState(1);
   const onSiteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSite(e.target.value);
     setTitles("");
@@ -96,9 +96,25 @@ const TitleGenerator: NextPage = () => {
       <div className="flex justify-center">
         <div className="flex flex-row align-middle space-x-2">
           <div className="flex flex-col justify-center align-middle">
-            <h3>Vælg nyhedsmedie</h3>
+            <div className="mt-2 flex flex-col">
+              <label htmlFor="slider">Temperature</label>
+              <input
+                id="slider"
+                disabled={sseStarted}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setTemperature(parseFloat(e.target.value))
+                }
+                value={temperature}
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+              ></input>
+            </div>
             <div>
+              <label htmlFor="site">Nyhedsmedie</label>
               <select
+                id="site"
                 className="p-1 block border border-solid border-gray-300 rounded-md dark: text-slate-900"
                 onChange={onSiteChange}
                 disabled={sseStarted}
@@ -110,20 +126,6 @@ const TitleGenerator: NextPage = () => {
                   <option key={site}>{site}</option>
                 ))}
               </select>
-            </div>
-            <div className="mt-2 flex flex-col">
-              <label htmlFor="slider">Temperature</label>
-              <input
-                id="slider"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setTemperature(parseFloat(e.target.value))
-                }
-                value={temperature}
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-              ></input>
             </div>
           </div>
         </div>
