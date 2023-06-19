@@ -73,21 +73,24 @@ const ArticleGenerator: NextPage = () => {
       <div className="flex flex-col justify-center max-w-3xl">
         <div className="flex flex-row">
           {!!siteName ? (
-            <h1 className="text-xl">
+            <h1 className="text-3xl">
               <Badge text={siteName.toString()} />
             </h1>
           ) : null}
         </div>
-        {content
-          .split("\n")
-          .filter((line) => !!line?.trim())
-          .map((line, i) => (
-            <p key={i} className="my-3">
-              {line}
-            </p>
-          ))}
+        <h1 className="text-xl font-bold mt-4">{title}</h1>
+        <div>
+          {content
+            .split("\n")
+            .filter((line) => !!line?.trim())
+            .map((line, i) => (
+              <p key={i} className="my-3">
+                {line}
+              </p>
+            ))}
 
-        {sseStarted ? <p className="animate-pulse">...</p> : ""}
+          {sseStarted ? <p className="animate-pulse">...</p> : ""}
+        </div>
       </div>
     </div>
   );

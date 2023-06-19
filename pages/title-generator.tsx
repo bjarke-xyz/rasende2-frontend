@@ -128,7 +128,7 @@ const TitleGenerator: NextPage = () => {
       <div className="flex flex-col justify-center mt-16">
         <div className="flex flex-row">
           {!!site ? (
-            <h1 className="text-xl">
+            <h1 className="text-3xl">
               <Badge text={site} />
             </h1>
           ) : null}
