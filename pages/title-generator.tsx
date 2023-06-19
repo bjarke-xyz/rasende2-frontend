@@ -6,13 +6,8 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { API_URL } from "../utils/constants";
 import { siteFetcher } from "../utils/fetcher";
 import { Badge } from "../components/badge";
-
-interface ContentEvent {
-  Content: string;
-}
-
-class RetriableError extends Error {}
-class FatalError extends Error {}
+import { RetriableError, FatalError } from "../utils/errors";
+import { ContentEvent } from "../utils/interfaces";
 
 const limit = 200;
 
@@ -63,8 +58,8 @@ const TitleGenerator: NextPage = () => {
               if (err instanceof RetriableError) {
                 alert("For mange forespørgsler, prøv igen om lidt");
               }
-              throw err; // rethrow to stop the operation
             }
+            throw err; // rethrow to stop the operation
           },
           onclose() {
             setSseStarted(false);
@@ -141,8 +136,20 @@ const TitleGenerator: NextPage = () => {
         {titles
           .split("\n")
           .filter((line) => !!line?.trim())
+          .map((line) => cleanLine(line))
           .map((line, i) => (
-            <p key={i}>- {cleanLine(line)}</p>
+            <p key={i}>
+              <a
+                className="hover:underline"
+                target="_blank"
+                href={`/article-generator?siteName=${site}&title=${encodeURIComponent(
+                  line
+                )}`}
+                rel="noreferrer"
+              >
+                - {line}
+              </a>
+            </p>
           ))}
 
         {sseStarted ? <p className="animate-pulse">- ...</p> : ""}
