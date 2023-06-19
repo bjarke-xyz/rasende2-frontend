@@ -137,7 +137,7 @@ const TitleGenerator: NextPage = () => {
           .split("\n")
           .filter((line) => !!line?.trim())
           .map((line) => cleanLine(line))
-          .map((line, i) => (
+          .map((line, i, lines) => (
             <p key={i}>
               <a
                 className="hover:underline"
@@ -148,11 +148,12 @@ const TitleGenerator: NextPage = () => {
                 rel="noreferrer"
               >
                 - {line}
+                {i === lines.length - 1 && sseStarted ? (
+                  <span className="animate-pulse">...</span>
+                ) : null}
               </a>
             </p>
           ))}
-
-        {sseStarted ? <p className="animate-pulse">- ...</p> : ""}
       </div>
       <div>
         {site?.length > 0 ? (

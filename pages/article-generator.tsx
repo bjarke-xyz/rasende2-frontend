@@ -83,13 +83,14 @@ const ArticleGenerator: NextPage = () => {
           {content
             .split("\n")
             .filter((line) => !!line?.trim())
-            .map((line, i) => (
+            .map((line, i, lines) => (
               <p key={i} className="my-3">
                 {line}
+                {i === lines.length - 1 && sseStarted ? (
+                  <span className="animate-pulse">...</span>
+                ) : null}
               </p>
             ))}
-
-          {sseStarted ? <p className="animate-pulse">...</p> : ""}
         </div>
       </div>
     </div>
