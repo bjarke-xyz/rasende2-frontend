@@ -140,11 +140,15 @@ const TitleGenerator: NextPage = () => {
           .map((line, i, lines) => (
             <p key={i}>
               <a
-                className="hover:underline"
+                className={sseStarted ? "" : "hover:underline"}
                 target="_blank"
-                href={`/article-generator?siteName=${site}&title=${encodeURIComponent(
-                  line
-                )}`}
+                href={
+                  sseStarted
+                    ? null
+                    : `/article-generator?siteName=${site}&title=${encodeURIComponent(
+                        line
+                      )}`
+                }
                 rel="noreferrer"
               >
                 - {line}
