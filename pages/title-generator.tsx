@@ -144,7 +144,7 @@ const TitleGenerator: NextPage = () => {
                 target="_blank"
                 href={
                   sseStarted
-                    ? null
+                    ? undefined
                     : `/article-generator?siteName=${site}&title=${encodeURIComponent(
                         line
                       )}`
