@@ -14,6 +14,7 @@ const limit = 200;
 const TitleGenerator: NextPage = () => {
   const [sseStarted, setSseStarted] = useState(false);
   const [titles, setTitles] = useState<string>("");
+  const [cursor, setCursor] = useState<string | null>(null);
   const { data: sites } = useSWR<string[]>([API_URL, "sites"], siteFetcher);
   const [site, setSite] = useState("");
   const [numberOfPages, setNumberOfPages] = useState(0);
@@ -32,9 +33,8 @@ const TitleGenerator: NextPage = () => {
     try {
       const ctrl = new AbortController();
       fetchEventSource(
-        `${API_URL}/generate-titles?siteName=${siteName}&offset=${
-          limit * page
-        }&limit=${limit}&temperature=${temperature}`,
+        `${API_URL}/generate-titles?siteName=${siteName}&offset=${limit * page
+        }&limit=${limit}&temperature=${temperature}&cursor=${cursor}`,
         {
           async onopen(response) {
             if (response.ok) {
@@ -49,6 +49,9 @@ const TitleGenerator: NextPage = () => {
             const event = JSON.parse(ev.data) as ContentEvent;
             if (event.Content) {
               setTitles((oldTitles) => oldTitles + event.Content);
+            }
+            if (event.cursor) {
+              setCursor(event.cursor);
             }
           },
           onerror(err) {
@@ -146,8 +149,8 @@ const TitleGenerator: NextPage = () => {
                   sseStarted
                     ? undefined
                     : `/article-generator?siteName=${site}&title=${encodeURIComponent(
-                        line
-                      )}`
+                      line
+                    )}`
                 }
                 rel="noreferrer"
               >
