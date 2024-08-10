@@ -8,7 +8,6 @@ import { API_URL } from "../utils/constants";
 import { FatalError, RetriableError } from "../utils/errors";
 import { ContentEvent } from "../utils/interfaces";
 import { Badge } from "../components/badge";
-import { HighlightedArticles } from "../components/highlighted-articles";
 
 const ArticleGenerator: NextPage = () => {
   const router = useRouter();
@@ -18,6 +17,8 @@ const ArticleGenerator: NextPage = () => {
   const [imageUrl, setImageUrl] = useState("");
   const siteName = router?.query?.siteName ?? "";
   const title = router?.query?.title ?? "";
+  const admin = (router?.query?.admin ?? "false") === "true";
+  console.log({ admin })
   useEffect(() => {
     async function generateContent() {
       if (sseStarted || hasGenerated) return;
@@ -68,6 +69,28 @@ const ArticleGenerator: NextPage = () => {
       generateContent();
     }
   });
+  async function toggleFeatured() {
+    const password = prompt('password?')
+    if (!password) {
+      alert(':(')
+      return;
+    }
+    const formData = new FormData();
+    formData.append('password', password);
+    formData.append('siteName', Array.isArray(siteName) ? siteName[0] : siteName);
+    formData.append('title', Array.isArray(title) ? title[0] : title);
+    fetch(`${API_URL}/set-highlight`, {
+      method: "POST",
+      body: formData,
+    }).then(async resp => {
+      if (resp.status > 299) {
+        const text = await resp.text();
+        alert(`STATUS: ${resp.status} // ${text}`);
+      }
+    }).catch(error => {
+      alert(error)
+    })
+  }
   return (
     <div className="m-4">
       <Head>
@@ -83,6 +106,11 @@ const ArticleGenerator: NextPage = () => {
             </h1>
           ) : null}
         </div>
+        {admin ? (
+          <>
+            <button onClick={toggleFeatured} className="bg-slate-200 w-52">Toggle featured</button>
+          </>
+        ) : null}
         <h1 className="text-xl font-bold mt-4">{title}</h1>
         <div>
           {!!imageUrl ? (

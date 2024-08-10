@@ -11,8 +11,9 @@ export const HighlightedArticles: React.FC = () => {
     );
     return (
         <div>
-            <h2 className="text-xl font-bold">Fremhævede artikler</h2>
-            <div className="flex mt-4 gap-4">
+            <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                {/* <div className="flex flex-wrap mt-4 gap-4"> */}
                 {!data ? <p>Ingen fremhævede artikler endnu...</p> : data.map(article => <ArticleCard key={article.title} article={article} />)}
             </div>
         </div>
@@ -22,7 +23,7 @@ export const HighlightedArticles: React.FC = () => {
 const placeholder = "https://static.bjarke.xyz/placeholder.png"
 
 const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
-    const urlObj = new URL(window.location.origin);
+    const urlObj = new URL(`${window.location.origin}/article-generator`);
     urlObj.searchParams.append('siteName', article.siteName);
     urlObj.searchParams.append('title', article.title);
     const url = urlObj.toString();
@@ -34,7 +35,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const contentPreview = truncateText(article.content, 100);
 
     return (
-        <div className="w-80 shadow-md rounded-lg">
+        <div className="min-w-[8rem]  shadow-md rounded-lg">
             <img
                 className="w-full h-48 object-cover"
                 src={article.imageUrl}
@@ -42,7 +43,19 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
                 alt={article.title}
             />
             <div className="p-4">
-                <h2 className="text-md font-semibold text-gray-800">{article.title}</h2>
+                <div className="flex items-center justify-between mb-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                        {article.siteName}
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                        {new Date(article.published).toLocaleDateString()}
+                    </span>
+                </div>
+                <h2 className="text-lg font-semibold text-gray-800 hover:underline">
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                        {article.title}
+                    </a>
+                </h2>
                 <p className="text-gray-600 mt-2">{contentPreview}</p>
                 <a
                     href={url}
@@ -50,7 +63,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:text-blue-700 mt-4 inline-block"
                 >
-                    Read more
+                    Læs mere
                 </a>
             </div>
         </div>
