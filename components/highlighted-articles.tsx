@@ -35,7 +35,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const contentPreview = truncateText(article.content, 100);
 
     return (
-        <div className="min-w-[8rem] shadow-md rounded-lg">
+        <div className="min-w-[8rem] shadow-md rounded-lg dark:bg-slate-700">
             <img
                 className="w-full h-48 object-cover"
                 src={article.imageUrl}
