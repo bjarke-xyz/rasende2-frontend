@@ -12,6 +12,8 @@ export interface SearchResult {
 }
 
 export interface FakeNewsItem {
+  siteId: number;
+  siteName: string;
   title: string;
   content: string;
   published: string;
