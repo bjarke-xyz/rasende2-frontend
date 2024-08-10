@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { NextPage } from "next";
 import Head from "next/head";
@@ -13,6 +14,7 @@ const ArticleGenerator: NextPage = () => {
   const [sseStarted, setSseStarted] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
   const [content, setContent] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const siteName = router?.query?.siteName ?? "";
   const title = router?.query?.title ?? "";
   useEffect(() => {
@@ -39,6 +41,8 @@ const ArticleGenerator: NextPage = () => {
             const event = JSON.parse(ev.data) as ContentEvent;
             if (event.Content) {
               setContent((oldContent) => oldContent + event.Content);
+            } else if (event.imageUrl) {
+              setImageUrl(event.imageUrl)
             }
           },
           onerror(err) {
@@ -79,6 +83,11 @@ const ArticleGenerator: NextPage = () => {
           ) : null}
         </div>
         <h1 className="text-xl font-bold mt-4">{title}</h1>
+        <div>
+          {!!imageUrl ? (
+            <img src={imageUrl} width="512" height="512" alt={Array.isArray(title) ? title[0] : title}></img>
+          ) : null}
+        </div>
         <div>
           {content
             .split("\n")
