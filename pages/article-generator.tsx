@@ -6,8 +6,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { API_URL } from "../utils/constants";
 import { FatalError, RetriableError } from "../utils/errors";
-import { ContentEvent } from "../utils/interfaces";
+import { ContentEvent, ImageStatus } from "../utils/interfaces";
 import { Badge } from "../components/badge";
+import { Loader } from "../components/loader";
 
 const ArticleGenerator: NextPage = () => {
   const router = useRouter();
@@ -15,6 +16,7 @@ const ArticleGenerator: NextPage = () => {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [imageStatus, setImageStatus] = useState<ImageStatus>("GENERATING")
   const siteName = router?.query?.siteName ?? "";
   const title = router?.query?.title ?? "";
   const admin = (router?.query?.admin ?? "false") === "true";
@@ -45,6 +47,9 @@ const ArticleGenerator: NextPage = () => {
               setContent((oldContent) => oldContent + event.Content);
             } else if (event.imageUrl) {
               setImageUrl(event.imageUrl)
+            }
+            if (event.imageStatus) {
+              setImageStatus(event.imageStatus)
             }
           },
           onerror(err) {
@@ -114,7 +119,7 @@ const ArticleGenerator: NextPage = () => {
         <h1 className="text-xl font-bold mt-4">{title}</h1>
         <div>
           {!!imageUrl ? (
-            <img src={imageUrl} width="512" height="512" alt={Array.isArray(title) ? title[0] : title}></img>
+            <img className={imageStatus === 'GENERATING' ? 'animate-pulse' : ''} src={imageUrl} width="512" height="512" alt={Array.isArray(title) ? title[0] : title}></img>
           ) : null}
         </div>
         <div>
