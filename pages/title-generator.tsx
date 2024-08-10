@@ -8,6 +8,7 @@ import { siteFetcher } from "../utils/fetcher";
 import { Badge } from "../components/badge";
 import { RetriableError, FatalError } from "../utils/errors";
 import { ContentEvent } from "../utils/interfaces";
+import { HighlightedArticles } from "../components/highlighted-articles";
 
 const limit = 200;
 
@@ -173,6 +174,8 @@ const TitleGenerator: NextPage = () => {
           </button>
         ) : null}
       </div>
+
+      <HighlightedArticles />
     </div>
   );
 };

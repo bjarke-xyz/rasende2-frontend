@@ -8,6 +8,7 @@ import { API_URL } from "../utils/constants";
 import { FatalError, RetriableError } from "../utils/errors";
 import { ContentEvent } from "../utils/interfaces";
 import { Badge } from "../components/badge";
+import { HighlightedArticles } from "../components/highlighted-articles";
 
 const ArticleGenerator: NextPage = () => {
   const router = useRouter();

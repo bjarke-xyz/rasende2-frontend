@@ -10,3 +10,10 @@ export interface RssItem {
 export interface SearchResult {
   items: RssItem[];
 }
+
+export interface FakeNewsItem {
+  title: string;
+  content: string;
+  published: string;
+  imageUrl: string;
+}
