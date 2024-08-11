@@ -1,27 +1,26 @@
+import { useQuery } from "@tanstack/react-query";
 import { formatDistanceStrict, parseISO } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
+import { charts, search } from "../api/search";
 import { Centered } from "../components/centered";
-import { RasendeChart, RasendeChartProps } from "../components/chart";
+import { RasendeChart } from "../components/chart";
 import { ItemLink } from "../components/item-link";
-import { SearchResult } from "../models/rss-item";
-import { API_URL } from "../utils/constants";
-import { fetcher } from "../utils/fetcher";
 
 const Home: NextPage = () => {
   const [queryParam, setQueryParam] = useState<string>("rasende");
-  const { data, error } = useSWR<SearchResult>(
-    [API_URL, "search", queryParam, 10],
-    fetcher
-  );
+  const limit = 10;
+  const { data, error } = useQuery({
+    queryKey: ['search', queryParam, limit],
+    queryFn: () => search(queryParam, limit),
+  })
 
-  const { data: chartData } = useSWR<RasendeChartProps>(
-    [API_URL, "charts", queryParam],
-    fetcher
-  );
+  const { data: chartData } = useQuery({
+    queryKey: ['charts', queryParam],
+    queryFn: () => charts(queryParam),
+  })
 
   const [now, setNow] = useState(new Date());
   useEffect(() => {

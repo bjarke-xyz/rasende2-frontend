@@ -1,21 +1,49 @@
 /* eslint-disable @next/next/no-img-element */
-import useSWR from "swr";
-import { FakeNewsItem, SearchResult } from "../models/rss-item";
-import { API_URL } from "../utils/constants";
-import { fetcher } from "../utils/fetcher";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getHighlightedFakeNews } from "../api/fake-news";
+import { FakeNewsItem } from "../models/rss-item";
 
 export const HighlightedArticles: React.FC = () => {
-    const { data, error } = useSWR<FakeNewsItem[]>(
-        [API_URL, "highlighted-fake-news"],
-        fetcher
-    );
+    const limit = 5
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+    } = useInfiniteQuery({
+        queryKey: ['featured-fake-news', limit],
+        queryFn: ({ pageParam }) => getHighlightedFakeNews(limit, pageParam),
+        initialPageParam: "",
+        getNextPageParam: (lastPage, pages) => {
+            if (lastPage.cursor) {
+                if (lastPage.fakeNews.length < limit) {
+                    // We got less than requested, we have reached the end
+                    return null;
+                }
+                return lastPage.cursor;
+            } else {
+                return null;
+            }
+        },
+    })
+    if (error) {
+        console.log('error getting fake news', error)
+    }
     return (
         <div>
             <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-                {/* <div className="flex flex-wrap mt-4 gap-4"> */}
-                {!data ? <p>Ingen fremhævede artikler endnu...</p> : data.map(article => <ArticleCard key={article.title} article={article} />)}
+                {!data ? <p>Ingen fremhævede artikler endnu...</p> : data.pages.flatMap(x => x.fakeNews).map(article => <ArticleCard key={article.title} article={article} />)}
             </div>
+            <button
+                className="bg-blue-100 enabled:hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+                onClick={(e) => fetchNextPage()}
+                disabled={!data || !hasNextPage || isFetchingNextPage || isFetching}
+            >
+                Vis mere
+            </button>
         </div>
     )
 }
@@ -32,7 +60,30 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
         return text.substring(0, maxLength) + "...";
     };
 
+    const getTimeDifference = (date: string) => {
+        const now = new Date();
+        const publishedDate = new Date(date);
+        const diffInMilliseconds = now.getTime() - publishedDate.getTime();
+        const diffInSeconds = Math.floor(diffInMilliseconds / 1000);
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        const diffInHours = Math.floor(diffInMinutes / 60);
+
+        if (diffInSeconds < 60) {
+            return `${diffInSeconds}s`;
+        } else if (diffInMinutes < 60) {
+            return `${diffInMinutes}m`;
+        } else if (diffInHours < 24) {
+            return `${diffInHours}h`;
+        } else {
+            return publishedDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+            });
+        }
+    };
+
     const contentPreview = truncateText(article.content, 100);
+    const published = getTimeDifference(article.published)
 
     return (
         <div className="min-w-[8rem] shadow-md rounded-lg dark:bg-slate-700">
@@ -47,8 +98,8 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
                     <span className="bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                         {article.siteName}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-200 text-xs">
-                        {new Date(article.published).toLocaleDateString()}
+                    <span className="text-gray-500 dark:text-gray-200 text-xs" title={new Date(article.published).toLocaleString()}>
+                        {published}
                     </span>
                 </div>
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-50 hover:underline">

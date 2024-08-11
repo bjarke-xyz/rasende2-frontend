@@ -1,14 +1,14 @@
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { useQuery } from "@tanstack/react-query";
 import { NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
-import useSWR from "swr";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { API_URL } from "../utils/constants";
-import { siteFetcher } from "../utils/fetcher";
+import { getSites } from "../api/sites";
 import { Badge } from "../components/badge";
-import { RetriableError, FatalError } from "../utils/errors";
-import { ContentEvent } from "../utils/interfaces";
 import { HighlightedArticles } from "../components/highlighted-articles";
+import { API_URL } from "../utils/constants";
+import { FatalError, RetriableError } from "../utils/errors";
+import { ContentEvent } from "../utils/interfaces";
 
 const limit = 200;
 
@@ -16,7 +16,10 @@ const TitleGenerator: NextPage = () => {
   const [sseStarted, setSseStarted] = useState(false);
   const [titles, setTitles] = useState<string>("");
   const [cursor, setCursor] = useState<string | null>(null);
-  const { data: sites } = useSWR<string[]>([API_URL, "sites"], siteFetcher);
+  const { data: sites } = useQuery({
+    queryKey: ['sites'],
+    queryFn: () => getSites(),
+  })
   const [site, setSite] = useState("");
   const [numberOfPages, setNumberOfPages] = useState(0);
   const [temperature, setTemperature] = useState(1);
@@ -117,8 +120,9 @@ const TitleGenerator: NextPage = () => {
                 className="p-1 block border border-solid border-gray-300 rounded-md dark: text-slate-900"
                 onChange={onSiteChange}
                 disabled={sseStarted}
+                defaultValue={""}
               >
-                <option value="" selected disabled>
+                <option value="" disabled>
                   Vælg
                 </option>
                 {(sites ?? []).map((site) => (

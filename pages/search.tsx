@@ -1,23 +1,22 @@
+import { useQuery } from "@tanstack/react-query";
 import debounce from "lodash.debounce";
 import { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, useMemo, useState } from "react";
-import useSWR from "swr";
-import { RasendeChart, RasendeChartProps } from "../components/chart";
+import { charts, search } from "../api/search";
+import { RasendeChart } from "../components/chart";
 import { ItemLink } from "../components/item-link";
-import { SearchResult } from "../models/rss-item";
-import { API_URL } from "../utils/constants";
-import { fetcher } from "../utils/fetcher";
 
 const defaultValue = "rasende";
 
 const Search: NextPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>(defaultValue);
   const [searchContent, setSearchContent] = useState<boolean>(false);
-  const { data: chartData } = useSWR<RasendeChartProps>(
-    [API_URL, "charts", searchQuery, 1000, searchContent],
-    fetcher
-  );
+  const limit = 1000
+  const { data: chartData } = useQuery({
+    queryKey: ['charts', searchQuery, limit, searchContent],
+    queryFn: () => charts(searchQuery, limit, searchContent),
+  })
   const [cnt, setCnt] = useState(1);
   const pages = [];
   for (let i = 0; i < cnt; i++) {
@@ -90,10 +89,10 @@ const SearchResultPage = ({
   offset,
   limit,
 }: SearchResultPageProps) => {
-  const { data, error } = useSWR<SearchResult>(
-    [API_URL, "search", searchQuery, limit, searchContent, offset],
-    fetcher
-  );
+  const { data, error } = useQuery({
+    queryKey: ['search', searchQuery, limit, searchContent, offset],
+    queryFn: () => search(searchQuery, limit, searchContent, offset),
+  })
   return (
     <div>
       {data?.items?.map((item) => (

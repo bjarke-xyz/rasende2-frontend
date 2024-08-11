@@ -4,8 +4,12 @@ import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "../hooks/theme-context";
 import { Footer } from "../components/footer";
 import { Header } from "../components/header";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export type Fueltype = "unleaded95" | "diesel" | "octane100";
+
+// Create a client
+const queryClient = new QueryClient()
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [showing, setShowing] = useState(false);
@@ -22,15 +26,17 @@ function MyApp({ Component, pageProps }: AppProps) {
     return <></>;
   } else {
     return (
-      <ThemeProvider>
-        <div className="h-screen flex flex-col">
-          <Header />
-          <main className="mb-auto mt-10">
-            <Component {...pageProps} />
-          </main>
-          <Footer />
-        </div>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <div className="h-screen flex flex-col">
+            <Header />
+            <main className="mb-auto mt-10">
+              <Component {...pageProps} />
+            </main>
+            <Footer />
+          </div>
+        </ThemeProvider>
+      </QueryClientProvider>
     );
   }
 }

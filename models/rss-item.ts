@@ -19,3 +19,7 @@ export interface FakeNewsItem {
   published: string;
   imageUrl: string;
 }
+export interface HighlightedFakeNewsResponse {
+  fakeNews: FakeNewsItem[];
+  cursor: string;
+}
