@@ -79,10 +79,14 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
         } else if (diffInHours < 24) {
             return `${diffInHours}h`;
         } else {
-            return publishedDate.toLocaleDateString("en-US", {
+            const options: Intl.DateTimeFormatOptions = {
                 month: "short",
                 day: "numeric",
-            });
+            };
+            if (publishedDate.getFullYear() !== now.getFullYear()) {
+                options.year = "numeric";
+            }
+            return publishedDate.toLocaleDateString("en-US", options);
         }
     };
 
