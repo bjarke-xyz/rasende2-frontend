@@ -12,6 +12,7 @@ export const HighlightedArticles: React.FC = () => {
         hasNextPage,
         isFetching,
         isFetchingNextPage,
+        status
     } = useInfiniteQuery({
         queryKey: ['featured-fake-news', limit],
         queryFn: ({ pageParam }) => getHighlightedFakeNews(limit, pageParam),
@@ -35,7 +36,10 @@ export const HighlightedArticles: React.FC = () => {
         <div>
             <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-                {!data ? <p>Ingen fremhævede artikler endnu...</p> : data.pages.flatMap(x => x.fakeNews).map(article => <ArticleCard key={article.title} article={article} />)}
+                {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
+                {status === 'error' ? <p>Kunne ikke hente fremhævede artikler</p> : null}
+                {status === 'success' && data?.pages?.length === 0 ? <p>Ingen fremhævede artikler endnu...</p> : null}
+                {status === 'success' && data ? data.pages.flatMap(x => x.fakeNews).map(article => <ArticleCard key={article.title} article={article} />) : null}
             </div>
             <button
                 className="bg-blue-100 enabled:hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
