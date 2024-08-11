@@ -41,13 +41,15 @@ export const HighlightedArticles: React.FC = () => {
                 {status === 'success' && data?.pages?.length === 0 ? <p>Ingen fremhævede artikler endnu...</p> : null}
                 {status === 'success' && data ? data.pages.flatMap(x => x.fakeNews).map(article => <ArticleCard key={article.title} article={article} />) : null}
             </div>
-            <button
-                className="bg-blue-100 enabled:hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
-                onClick={(e) => fetchNextPage()}
-                disabled={!data || !hasNextPage || isFetchingNextPage || isFetching}
-            >
-                Vis mere
-            </button>
+            {hasNextPage ? (
+                <button
+                    className="bg-blue-100 enabled:hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+                    onClick={(e) => fetchNextPage()}
+                    disabled={!data || isFetchingNextPage || isFetching}
+                >
+                    Vis mere
+                </button>
+            ) : null}
         </div>
     )
 }
