@@ -2,6 +2,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getHighlightedFakeNews } from "../api/fake-news";
 import { FakeNewsItem } from "../models/rss-item";
+import { placeholderImg } from "../utils/constants";
 
 export const HighlightedArticles: React.FC = () => {
     const limit = 5
@@ -54,7 +55,6 @@ export const HighlightedArticles: React.FC = () => {
     )
 }
 
-const placeholder = "https://static.bjarke.xyz/placeholder.png"
 
 const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const urlObj = new URL(`${window.location.origin}/article-generator`);
@@ -99,8 +99,8 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
         <div className="min-w-[8rem] shadow-md rounded-lg dark:bg-slate-700">
             <img
                 className="w-full h-48 object-cover"
-                src={article.imageUrl}
-                onError={() => article.imageUrl = placeholder}
+                src={article.imageUrl ?? placeholderImg}
+                onError={() => article.imageUrl = placeholderImg}
                 alt={article.title}
             />
             <div className="p-4">
