@@ -7,6 +7,6 @@ export async function getHighlightedFakeNews(limit: number, cursor?: string): Pr
     if (cursor) {
         searchParams.append('cursor', cursor)
     }
-    const resp = await fetch(`${API_URL}/highlighted-fake-news?${searchParams.toString()}`);
+    const resp = await fetch(`${API_URL}/api/highlighted-fake-news?${searchParams.toString()}`);
     return await resp.json();
 }

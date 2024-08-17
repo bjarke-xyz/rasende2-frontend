@@ -30,7 +30,7 @@ const ArticleGenerator: NextPage = () => {
       const encodedSiteName = encodeURIComponent(siteName.toString());
       const encodedTitle = encodeURIComponent(title.toString());
       fetchEventSource(
-        `${API_URL}/generate-content?siteName=${encodedSiteName}&title=${encodedTitle}`,
+        `${API_URL}/api/generate-content?siteName=${encodedSiteName}&title=${encodedTitle}`,
         {
           async onopen(response) {
             if (response.ok) {
@@ -84,7 +84,7 @@ const ArticleGenerator: NextPage = () => {
     formData.append('password', password);
     formData.append('siteName', Array.isArray(siteName) ? siteName[0] : siteName);
     formData.append('title', Array.isArray(title) ? title[0] : title);
-    fetch(`${API_URL}/set-highlight`, {
+    fetch(`${API_URL}/api/set-highlight`, {
       method: "POST",
       body: formData,
     }).then(async resp => {

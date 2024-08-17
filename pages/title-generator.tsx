@@ -37,7 +37,7 @@ const TitleGenerator: NextPage = () => {
     try {
       const ctrl = new AbortController();
       fetchEventSource(
-        `${API_URL}/generate-titles?siteName=${siteName}&offset=${limit * page
+        `${API_URL}/api/generate-titles?siteName=${siteName}&offset=${limit * page
         }&limit=${limit}&temperature=${temperature}&cursor=${cursor}`,
         {
           async onopen(response) {

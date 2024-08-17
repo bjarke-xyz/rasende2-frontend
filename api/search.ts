@@ -12,7 +12,7 @@ export async function search(searchTerm: string, limit: number, searchContent?: 
     if (offset !== undefined) {
         searchParams.append('offset', offset.toString());
     }
-    const resp = await fetch(`${API_URL}/search?${searchParams.toString()}`);
+    const resp = await fetch(`${API_URL}/api/search?${searchParams.toString()}`);
     return await resp.json();
 }
 
@@ -25,6 +25,6 @@ export async function charts(searchTerm: string, limit?: number, searchContent?:
     if (searchContent !== undefined) {
         searchParams.append('content', `${searchContent}`)
     }
-    const resp = await fetch(`${API_URL}/charts?${searchParams.toString()}`);
+    const resp = await fetch(`${API_URL}/api/charts?${searchParams.toString()}`);
     return await resp.json();
 }
