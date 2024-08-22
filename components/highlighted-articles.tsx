@@ -104,7 +104,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     return (
         <div className="min-w-[8rem] shadow-md rounded-lg dark:bg-slate-700">
             <img
-                className="w-full h-[512px] object-cover"
+                className="w-full max-w-[512px] h-[512px] object-cover"
                 src={article.imageUrl ?? placeholderImg}
                 onError={() => article.imageUrl = placeholderImg}
                 alt={article.title}
