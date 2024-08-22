@@ -4,6 +4,10 @@ import { getHighlightedFakeNews } from "../api/fake-news";
 import { FakeNewsItem } from "../models/rss-item";
 import { placeholderImg } from "../utils/constants";
 import { useRouter } from "next/router";
+import { FakeNewsVotes } from "./fake-news-votes";
+import { orderBy } from 'lodash'
+
+export const featuredFakeNewsQueryKey = 'featured-fake-news'
 
 export const HighlightedArticles: React.FC = () => {
     const limit = 5
@@ -16,7 +20,7 @@ export const HighlightedArticles: React.FC = () => {
         isFetchingNextPage,
         status
     } = useInfiniteQuery({
-        queryKey: ['featured-fake-news', limit],
+        queryKey: [featuredFakeNewsQueryKey, limit],
         queryFn: ({ pageParam }) => getHighlightedFakeNews(limit, pageParam),
         initialPageParam: "",
         getNextPageParam: (lastPage, pages) => {
@@ -34,6 +38,7 @@ export const HighlightedArticles: React.FC = () => {
     if (error) {
         console.log('error getting fake news', error)
     }
+    const transformedData = (data?.pages?.flatMap(x => x.fakeNews) ?? [])
     return (
         <div>
             <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
@@ -41,7 +46,7 @@ export const HighlightedArticles: React.FC = () => {
                 {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
                 {status === 'error' ? <p>Kunne ikke hente fremhævede artikler</p> : null}
                 {status === 'success' && data?.pages?.length === 0 ? <p>Ingen fremhævede artikler endnu...</p> : null}
-                {status === 'success' && data ? data.pages.flatMap(x => x.fakeNews).map(article => <ArticleCard key={article.title} article={article} />) : null}
+                {status === 'success' && transformedData ? transformedData.map(article => <ArticleCard key={article.title} article={article} />) : null}
             </div>
             {hasNextPage ? (
                 <button
@@ -109,7 +114,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
                 onError={() => article.imageUrl = placeholderImg}
                 alt={article.title}
             />
-            <div className="p-4">
+            <div className="p-4 flex flex-col">
                 <div className="flex items-center justify-between mb-2">
                     <span className="bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                         {article.siteName}
@@ -124,14 +129,17 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
                     </a>
                 </h2>
                 <p className="text-gray-600 dark:text-gray-200 mt-2">{contentPreview}</p>
-                <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 dark:text-blue-200 dark:hover:text-blue-300 hover:text-blue-700 mt-4 inline-block"
-                >
-                    Læs mere
-                </a>
+                <div className="flex flex-row gap-4 justify-between content-end">
+                    <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className=" text-blue-500 dark:text-blue-200 dark:hover:text-blue-300 hover:text-blue-700 mt-4 inline-block"
+                    >
+                        Læs mere
+                    </a>
+                    <FakeNewsVotes fakeNews={article} />
+                </div>
             </div>
         </div>
     )

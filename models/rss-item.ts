@@ -18,6 +18,9 @@ export interface FakeNewsItem {
   content: string;
   published: string;
   imageUrl: string;
+  votes: number;
+
+  publishedDate: Date;
 }
 export interface HighlightedFakeNewsResponse {
   fakeNews: FakeNewsItem[];

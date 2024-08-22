@@ -136,8 +136,8 @@ const ArticleGenerator: NextPage = () => {
         </div>
         {admin ? (
           <div className="flex flex-row gap-4">
-            <button onClick={toggleFeatured} className="bg-green-500 bg-slate-50 dark:bg-slate-200 dark:bg-green-700 w-52">Toggle featured</button>
-            <button onClick={resetContent} className="bg-green-500 bg-slate-50 dark:bg-slate-200 dark:bg-green-700 w-52">Reset content</button>
+            <button onClick={toggleFeatured} className="bg-green-500 dark:bg-green-700 w-52">Toggle featured</button>
+            <button onClick={resetContent} className="bg-green-500 dark:bg-green-700 w-52">Reset content</button>
           </div>
         ) : null}
         <h1 className="text-xl font-bold mt-4">{title}</h1>
