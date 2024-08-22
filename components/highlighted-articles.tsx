@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { getHighlightedFakeNews } from "../api/fake-news";
 import { FakeNewsItem } from "../models/rss-item";
 import { placeholderImg } from "../utils/constants";
+import { useRouter } from "next/router";
 
 export const HighlightedArticles: React.FC = () => {
     const limit = 5
@@ -36,7 +37,7 @@ export const HighlightedArticles: React.FC = () => {
     return (
         <div>
             <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 max-w-[2048px] m-auto">
                 {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
                 {status === 'error' ? <p>Kunne ikke hente fremhævede artikler</p> : null}
                 {status === 'success' && data?.pages?.length === 0 ? <p>Ingen fremhævede artikler endnu...</p> : null}
@@ -57,9 +58,14 @@ export const HighlightedArticles: React.FC = () => {
 
 
 const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
+    const router = useRouter();
+    const admin = (router?.query?.admin ?? "false") === "true";
     const urlObj = new URL(`${window.location.origin}/article-generator`);
     urlObj.searchParams.append('siteName', article.siteName);
     urlObj.searchParams.append('title', article.title);
+    if (admin) {
+        urlObj.searchParams.append('admin', 'true');
+    }
     const url = urlObj.toString();
     const truncateText = (text: string, maxLength: number) => {
         if (text.length <= maxLength) return text;
@@ -98,7 +104,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     return (
         <div className="min-w-[8rem] shadow-md rounded-lg dark:bg-slate-700">
             <img
-                className="w-full h-48 object-cover"
+                className="w-full h-[512px] object-cover"
                 src={article.imageUrl ?? placeholderImg}
                 onError={() => article.imageUrl = placeholderImg}
                 alt={article.title}

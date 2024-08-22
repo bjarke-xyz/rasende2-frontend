@@ -96,6 +96,29 @@ const ArticleGenerator: NextPage = () => {
       alert(error)
     })
   }
+  async function resetContent() {
+    const password = prompt('password?')
+    if (!password) {
+      alert(':(')
+      return;
+    }
+    const formData = new FormData();
+    formData.append('password', password);
+    formData.append('siteName', Array.isArray(siteName) ? siteName[0] : siteName);
+    formData.append('title', Array.isArray(title) ? title[0] : title);
+    fetch(`${API_URL}/api/reset-content`, {
+      method: "POST",
+      body: formData,
+    }).then(async resp => {
+      if (resp.status > 299) {
+        const text = await resp.text();
+        alert(`STATUS: ${resp.status} // ${text}`);
+      }
+    }).catch(error => {
+      alert(error)
+    })
+
+  }
   return (
     <div className="m-4">
       <Head>
@@ -112,9 +135,10 @@ const ArticleGenerator: NextPage = () => {
           ) : null}
         </div>
         {admin ? (
-          <>
-            <button onClick={toggleFeatured} className="bg-slate-200 w-52">Toggle featured</button>
-          </>
+          <div className="flex flex-row gap-4">
+            <button onClick={toggleFeatured} className="bg-green-500 bg-slate-50 dark:bg-slate-200 dark:bg-green-700 w-52">Toggle featured</button>
+            <button onClick={resetContent} className="bg-green-500 bg-slate-50 dark:bg-slate-200 dark:bg-green-700 w-52">Reset content</button>
+          </div>
         ) : null}
         <h1 className="text-xl font-bold mt-4">{title}</h1>
         <div>
