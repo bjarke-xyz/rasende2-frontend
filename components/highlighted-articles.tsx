@@ -37,7 +37,7 @@ export const HighlightedArticles: React.FC = () => {
     return (
         <div>
             <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 max-w-[2048px] m-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4 max-w-[2048px] m-auto">
                 {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
                 {status === 'error' ? <p>Kunne ikke hente fremhævede artikler</p> : null}
                 {status === 'success' && data?.pages?.length === 0 ? <p>Ingen fremhævede artikler endnu...</p> : null}
@@ -102,9 +102,9 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const published = getTimeDifference(article.published)
 
     return (
-        <div className="min-w-[8rem] shadow-md rounded-lg dark:bg-slate-700">
+        <div className="min-w-[8rem] max-w-[512px] shadow-md rounded-lg dark:bg-slate-700">
             <img
-                className="w-full max-w-[512px] h-[512px] object-cover"
+                className="w-full h-[512px] object-cover"
                 src={article.imageUrl ?? placeholderImg}
                 onError={() => article.imageUrl = placeholderImg}
                 alt={article.title}
