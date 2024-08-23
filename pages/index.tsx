@@ -23,7 +23,6 @@ const defaultQueryParam = "rasende";
 const defaultLimit = 10;
 
 const Home: NextPage<IndexProps> = (props) => {
-  console.log(props)
   const { data, error } = useQuery({
     queryKey: ['search', props.queryParam ?? defaultQueryParam, props.limit ?? defaultLimit],
     queryFn: () => search(props.queryParam ?? defaultQueryParam, props.limit ?? defaultLimit),
