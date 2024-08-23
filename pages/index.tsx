@@ -1,15 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { formatDistanceStrict, parseISO } from "date-fns";
-import daLocale from "date-fns/locale/da";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { charts, search } from "../api/search";
 import { Centered } from "../components/centered";
 import { RasendeChart } from "../components/chart";
 import { ItemLink } from "../components/item-link";
+import { formatDistanceStrict } from "date-fns/formatDistanceStrict";
+import { parseISO } from "date-fns/parseISO";
+import { da } from 'date-fns/locale'
 
-const Home: NextPage = () => {
+interface IndexProps {
+  lol: string;
+}
+
+const Home: NextPage<IndexProps> = (props) => {
+  console.log(props)
   const [queryParam, setQueryParam] = useState<string>("rasende");
   const limit = 10;
   const { data, error } = useQuery({
@@ -52,9 +58,7 @@ const Home: NextPage = () => {
           <Centered>
             {data.items.length > 0 && (
               <div title={data.items[0].published}>
-                {formatDistanceStrict(now, parseISO(data.items[0].published), {
-                  locale: daLocale,
-                })}{" "}
+                {formatDistanceStrict(now, parseISO(data.items[0].published), { locale: da })}{" "}
                 siden
               </div>
             )}
@@ -75,5 +79,13 @@ const Home: NextPage = () => {
     </div>
   );
 };
+
+export const getServerSideProps = (async () => {
+  return {
+    props: {
+      lol: 'hej'
+    }
+  }
+}) satisfies GetServerSideProps<IndexProps>;
 
 export default Home;

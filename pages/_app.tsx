@@ -12,33 +12,20 @@ export type Fueltype = "unleaded95" | "diesel" | "octane100";
 const queryClient = new QueryClient()
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [showing, setShowing] = useState(false);
 
-  // nextjs hacks https://stackoverflow.com/a/71797054
-  useEffect(() => {
-    setShowing(true);
-  }, []);
-
-  if (!showing) {
-    return null;
-  }
-  if (typeof window === "undefined") {
-    return <></>;
-  } else {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <div className="h-screen flex flex-col">
-            <Header />
-            <main className="mb-auto mt-10">
-              <Component {...pageProps} />
-            </main>
-            <Footer />
-          </div>
-        </ThemeProvider>
-      </QueryClientProvider>
-    );
-  }
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <div className="h-screen flex flex-col">
+          <Header />
+          <main className="mb-auto mt-10">
+            <Component {...pageProps} />
+          </main>
+          <Footer />
+        </div>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
 }
 
 export default MyApp;
