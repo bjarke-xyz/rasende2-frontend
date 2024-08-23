@@ -179,7 +179,7 @@ const TitleGenerator: NextPage = () => {
         ) : null}
       </div>
 
-      <HighlightedArticles />
+      {/* <HighlightedArticles /> */}
     </div>
   );
 };

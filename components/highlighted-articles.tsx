@@ -1,15 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getHighlightedFakeNews } from "../api/fake-news";
-import { FakeNewsItem } from "../models/rss-item";
-import { placeholderImg } from "../utils/constants";
+import { FakeNewsItem, HighlightedFakeNewsResponse } from "../models/rss-item";
+import { BASE_URL, placeholderImg } from "../utils/constants";
 import { useRouter } from "next/router";
 import { FakeNewsVotes } from "./fake-news-votes";
-import { orderBy } from 'lodash'
+import { format } from 'date-fns/format'
+import { truncateText } from "../utils/utils";
+import Link from "next/link";
 
 export const featuredFakeNewsQueryKey = 'featured-fake-news'
 
-export const HighlightedArticles: React.FC = () => {
+export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFakeNewsResponse | null, limit: number }> = (props) => {
     const limit = 5
     const {
         data,
@@ -22,6 +24,14 @@ export const HighlightedArticles: React.FC = () => {
     } = useInfiniteQuery({
         queryKey: [featuredFakeNewsQueryKey, limit],
         queryFn: ({ pageParam }) => getHighlightedFakeNews(limit, pageParam),
+        initialData: () => {
+            if (props?.highlightedFakeNews) {
+                return {
+                    pageParams: [undefined],
+                    pages: [props.highlightedFakeNews]
+                }
+            }
+        },
         initialPageParam: "",
         getNextPageParam: (lastPage, pages) => {
             if (lastPage.cursor) {
@@ -42,6 +52,12 @@ export const HighlightedArticles: React.FC = () => {
     return (
         <div>
             <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
+            <div className="m-4">
+                <Link className="bg-blue-100 enabled:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+                    href="/title-generator">
+                    Opret en falsk nyhed
+                </Link>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4 max-w-[2600px] m-auto">
                 {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
                 {status === 'error' ? <p>Kunne ikke hente fremhævede artikler</p> : null}
@@ -65,17 +81,11 @@ export const HighlightedArticles: React.FC = () => {
 const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const router = useRouter();
     const admin = (router?.query?.admin ?? "false") === "true";
-    const urlObj = new URL(`${window.location.origin}/article-generator`);
-    urlObj.searchParams.append('siteName', article.siteName);
-    urlObj.searchParams.append('title', article.title);
+    const urlObj = new URL(`${BASE_URL}/fake-news/${article.siteId}-${format(article.published, 'yyyy-MM-dd')}-${encodeURIComponent(article.title)}`);
     if (admin) {
         urlObj.searchParams.append('admin', 'true');
     }
     const url = urlObj.toString();
-    const truncateText = (text: string, maxLength: number) => {
-        if (text.length <= maxLength) return text;
-        return text.substring(0, maxLength) + "...";
-    };
 
     const getTimeDifference = (date: string) => {
         const now = new Date();
@@ -103,7 +113,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
         }
     };
 
-    const contentPreview = truncateText(article.content, 100);
+    const contentPreview = truncateText(article.content);
     const published = getTimeDifference(article.published)
 
     return (
@@ -119,7 +129,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
                     <span className="bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                         {article.siteName}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-200 text-xs" title={new Date(article.published).toLocaleString()}>
+                    <span className="text-gray-500 dark:text-gray-200 text-xs" title={format(article.published, 'yyyy-MM-dd HH:mm:ss')}>
                         {published}
                     </span>
                 </div>

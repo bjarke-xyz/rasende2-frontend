@@ -1,36 +1,44 @@
 import { useQuery } from "@tanstack/react-query";
-import type { GetServerSideProps, NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { charts, search } from "../api/search";
 import { Centered } from "../components/centered";
-import { RasendeChart } from "../components/chart";
+import { RasendeChart, RasendeChartProps } from "../components/chart";
 import { ItemLink } from "../components/item-link";
 import { formatDistanceStrict } from "date-fns/formatDistanceStrict";
 import { parseISO } from "date-fns/parseISO";
 import { da } from 'date-fns/locale'
+import { SearchResult } from "../models/rss-item";
+import { NextSeo } from "next-seo";
 
 interface IndexProps {
-  lol: string;
+  queryParam: string;
+  limit: number;
+  searchResult: SearchResult | null;
+  chartData: RasendeChartProps | null;
 }
+
+const defaultQueryParam = "rasende";
+const defaultLimit = 10;
 
 const Home: NextPage<IndexProps> = (props) => {
   console.log(props)
-  const [queryParam, setQueryParam] = useState<string>("rasende");
-  const limit = 10;
   const { data, error } = useQuery({
-    queryKey: ['search', queryParam, limit],
-    queryFn: () => search(queryParam, limit),
+    queryKey: ['search', props.queryParam ?? defaultQueryParam, props.limit ?? defaultLimit],
+    queryFn: () => search(props.queryParam ?? defaultQueryParam, props.limit ?? defaultLimit),
+    initialData: props.searchResult,
   })
 
   const { data: chartData } = useQuery({
-    queryKey: ['charts', queryParam],
-    queryFn: () => charts(queryParam),
+    queryKey: ['charts', props.queryParam ?? defaultQueryParam],
+    queryFn: () => charts(props.queryParam ?? defaultQueryParam),
+    initialData: props.chartData,
   })
 
   const [now, setNow] = useState(new Date());
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
+    const interval = setInterval(() => setNow(new Date()), 1000 * 60);
     return () => {
       clearInterval(interval);
     };
@@ -41,6 +49,7 @@ const Home: NextPage<IndexProps> = (props) => {
       <Head>
         <title>Raseri i de danske medier | Rasende</title>
       </Head>
+      <NextSeo title="Raseri i de danske medier" />
       {error && <p>Der skete en fejl :(</p>}
       {!error && data && data.items && (
         <div>
@@ -74,18 +83,38 @@ const Home: NextPage<IndexProps> = (props) => {
           <div className="mt-8">
             {chartData && <RasendeChart {...chartData} />}
           </div>
+          <div>
+            Inspireret af{" "}
+            <a
+              className="underline"
+              href="https://web.archive.org/web/20200628061846/https://rasende.dk/"
+            >
+              https://rasende.dk/
+            </a>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export const getServerSideProps = (async () => {
+export async function getServerSideProps(): Promise<{ props: IndexProps }> {
+  const queryParam = defaultQueryParam;
+  const limit = defaultLimit;
+  const searchResultPromise = search(queryParam, limit);
+  const chartDataPromise = charts(queryParam);
+  const results = await Promise.allSettled([searchResultPromise, chartDataPromise]);
+  const searchResult = results[0].status === 'fulfilled' ? results[0].value : null;
+  const chartData = results[1].status === 'fulfilled' ? results[1].value : null;
+
   return {
     props: {
-      lol: 'hej'
-    }
+      queryParam,
+      limit,
+      searchResult,
+      chartData,
+    } as IndexProps
   }
-}) satisfies GetServerSideProps<IndexProps>;
+}
 
 export default Home;

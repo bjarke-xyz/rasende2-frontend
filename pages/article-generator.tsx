@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { NextPage } from "next";
 import Head from "next/head";
@@ -7,8 +6,7 @@ import { useEffect, useState } from "react";
 import { API_URL } from "../utils/constants";
 import { FatalError, RetriableError } from "../utils/errors";
 import { ContentEvent, ImageStatus } from "../utils/interfaces";
-import { Badge } from "../components/badge";
-import { Loader } from "../components/loader";
+import { FakeNewsArticle } from "../components/fake-news-article";
 
 const ArticleGenerator: NextPage = () => {
   const router = useRouter();
@@ -74,92 +72,23 @@ const ArticleGenerator: NextPage = () => {
       generateContent();
     }
   });
-  async function toggleFeatured() {
-    const password = prompt('password?')
-    if (!password) {
-      alert(':(')
-      return;
-    }
-    const formData = new FormData();
-    formData.append('password', password);
-    formData.append('siteName', Array.isArray(siteName) ? siteName[0] : siteName);
-    formData.append('title', Array.isArray(title) ? title[0] : title);
-    fetch(`${API_URL}/api/set-highlight`, {
-      method: "POST",
-      body: formData,
-    }).then(async resp => {
-      if (resp.status > 299) {
-        const text = await resp.text();
-        alert(`STATUS: ${resp.status} // ${text}`);
-      }
-    }).catch(error => {
-      alert(error)
-    })
-  }
-  async function resetContent() {
-    const password = prompt('password?')
-    if (!password) {
-      alert(':(')
-      return;
-    }
-    const formData = new FormData();
-    formData.append('password', password);
-    formData.append('siteName', Array.isArray(siteName) ? siteName[0] : siteName);
-    formData.append('title', Array.isArray(title) ? title[0] : title);
-    fetch(`${API_URL}/api/reset-content`, {
-      method: "POST",
-      body: formData,
-    }).then(async resp => {
-      if (resp.status > 299) {
-        const text = await resp.text();
-        alert(`STATUS: ${resp.status} // ${text}`);
-      }
-    }).catch(error => {
-      alert(error)
-    })
 
-  }
   return (
     <div className="m-4">
       <Head>
         <title>
-          {title} - {siteName} | Fake News Generator
+          {title.toString()} - {siteName.toString()} | Fake News Generator
         </title>
       </Head>
-      <div className="flex flex-col justify-center max-w-3xl">
-        <div className="flex flex-row">
-          {!!siteName ? (
-            <h1 className="text-3xl">
-              <Badge text={siteName.toString()} />
-            </h1>
-          ) : null}
-        </div>
-        {admin ? (
-          <div className="flex flex-row gap-4">
-            <button onClick={toggleFeatured} className="bg-green-500 dark:bg-green-700 w-52">Toggle featured</button>
-            <button onClick={resetContent} className="bg-green-500 dark:bg-green-700 w-52">Reset content</button>
-          </div>
-        ) : null}
-        <h1 className="text-xl font-bold mt-4">{title}</h1>
-        <div>
-          {!!imageUrl ? (
-            <img className={imageStatus === 'GENERATING' ? 'animate-pulse' : ''} src={imageUrl} width="512" height="512" alt={Array.isArray(title) ? title[0] : title}></img>
-          ) : null}
-        </div>
-        <div>
-          {content
-            .split("\n")
-            .filter((line) => !!line?.trim())
-            .map((line, i, lines) => (
-              <p key={i} className="my-3">
-                {line}
-                {i === lines.length - 1 && sseStarted ? (
-                  <span className="animate-pulse">...</span>
-                ) : null}
-              </p>
-            ))}
-        </div>
-      </div>
+      <FakeNewsArticle generating={imageStatus === 'GENERATING' || sseStarted} article={{
+        siteId: 0,
+        siteName: siteName.toString(),
+        title: title.toString(),
+        content: content,
+        imageUrl: imageUrl,
+        published: "",
+        votes: 0,
+      }} />
     </div>
   );
 };
