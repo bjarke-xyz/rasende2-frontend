@@ -17,8 +17,6 @@ const ArticleGenerator: NextPage = () => {
   const [imageStatus, setImageStatus] = useState<ImageStatus>("GENERATING")
   const siteName = router?.query?.siteName ?? "";
   const title = router?.query?.title ?? "";
-  const admin = (router?.query?.admin ?? "false") === "true";
-  console.log({ admin })
   useEffect(() => {
     async function generateContent() {
       if (sseStarted || hasGenerated) return;
