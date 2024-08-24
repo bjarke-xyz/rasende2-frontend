@@ -4,6 +4,13 @@ import { FakeNewsItem } from "../models/rss-item";
 import { Badge } from "./badge";
 
 export const FakeNewsArticle: React.FC<{ article: FakeNewsItem; admin?: boolean; generating?: boolean; }> = ({ article, admin, generating }) => {
+    function handleToggleFeatured() {
+        if (admin) {
+            const password = prompt("password?");
+            if (!password) return;
+            return toggleFeatured(article.siteName, article.title, password);
+        }
+    }
     return (
         <div className="flex flex-col justify-center max-w-3xl">
             <div className="flex flex-row">
@@ -15,7 +22,7 @@ export const FakeNewsArticle: React.FC<{ article: FakeNewsItem; admin?: boolean;
             </div>
             {admin ? (
                 <div className="flex flex-row gap-4">
-                    <button onClick={() => toggleFeatured(article.siteName, article.title)} className="btn-primary">Toggle featured</button>
+                    <button onClick={() => handleToggleFeatured()} className="btn-primary">Toggle featured</button>
                     <button onClick={() => resetContent(article.siteName, article.title)} className="btn-primary">Reset content</button>
                 </div>
             ) : null}

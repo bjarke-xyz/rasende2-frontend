@@ -22,7 +22,6 @@ const TitleGenerator: NextPage = () => {
   })
   const [site, setSite] = useState("");
   const [numberOfPages, setNumberOfPages] = useState(0);
-  const [temperature, setTemperature] = useState(1);
   const onSiteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSite(e.target.value);
     setTitles("");
@@ -38,7 +37,7 @@ const TitleGenerator: NextPage = () => {
       const ctrl = new AbortController();
       fetchEventSource(
         `${API_URL}/api/generate-titles?siteName=${siteName}&offset=${limit * page
-        }&limit=${limit}&temperature=${temperature}&cursor=${cursor}`,
+        }&limit=${limit}&temperature=1&cursor=${cursor}`,
         {
           async onopen(response) {
             if (response.ok) {
@@ -88,31 +87,16 @@ const TitleGenerator: NextPage = () => {
     if (line?.trim()?.startsWith("-")) {
       return line.replace("-", "").trim();
     }
-    return line;
+    return line?.trim();
   };
   return (
     <div className="m-4">
       <Head>
-        <title>Fake News Generator</title>
+        <title>Opret en Falsk Nyhed</title>
       </Head>
       <div className="flex justify-center">
         <div className="flex flex-row align-middle space-x-2">
           <div className="flex flex-col justify-center align-middle">
-            <div className="mt-2 flex flex-col">
-              <label htmlFor="slider">Temperature</label>
-              <input
-                id="slider"
-                disabled={sseStarted}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setTemperature(parseFloat(e.target.value))
-                }
-                value={temperature}
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-              ></input>
-            </div>
             <div>
               <label htmlFor="site">Nyhedsmedie</label>
               <select
@@ -133,8 +117,8 @@ const TitleGenerator: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-center mt-16">
-        <div className="flex flex-row">
+      <div className="flex flex-col justify-center mt-16 mb-4">
+        <div className="flex flex-row mb-4">
           {!!site ? (
             <h1 className="text-3xl">
               <Badge text={site} />
@@ -178,8 +162,6 @@ const TitleGenerator: NextPage = () => {
           </button>
         ) : null}
       </div>
-
-      {/* <HighlightedArticles /> */}
     </div>
   );
 };

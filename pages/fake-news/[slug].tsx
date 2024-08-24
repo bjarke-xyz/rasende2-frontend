@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NextSeo } from "next-seo";
 import { FakeNewsArticle } from "../../components/fake-news-article";
 import Head from "next/head";
-import { truncateText } from "../../utils/utils";
+import { parseArticleSlug, truncateText } from "../../utils/utils";
 import { BASE_URL, placeholderImg } from "../../utils/constants";
 import { formatISO } from "date-fns/formatISO";
 
@@ -83,36 +83,3 @@ export async function getServerSideProps(context: GetServerSidePropsContext): Pr
     }
 }
 
-
-function parseArticleSlug(slug: string): [number, Date, string, Error | null] {
-    // slug = {site-id:123}-{date:2024-08-19}-{title:article title qwerty}
-    let siteId = 0;
-    let date = new Date();
-    let title = "";
-    let err: Error | null = null;
-
-    const parts = slug.split("-");
-
-    if (parts.length < 4) {
-        return [siteId, date, title, new Error("invalid slug")];
-    }
-
-    siteId = parseInt(parts[0]);
-    if (isNaN(siteId)) {
-        return [siteId, date, title, new Error("error parsing site id")];
-    }
-
-    const year = parts[1];
-    const month = parts[2];
-    const day = parts[3];
-    const dateString = `${year}-${month}-${day}`;
-
-    date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-        return [siteId, date, title, new Error("error parsing date")];
-    }
-
-    title = parts.slice(4).join("-");
-
-    return [siteId, date, title, null];
-}

@@ -6,7 +6,7 @@ import { BASE_URL, placeholderImg } from "../utils/constants";
 import { useRouter } from "next/router";
 import { FakeNewsVotes } from "./fake-news-votes";
 import { format } from 'date-fns/format'
-import { truncateText } from "../utils/utils";
+import { makeArticleSlug, truncateText } from "../utils/utils";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -59,21 +59,21 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
     const transformedData = (data?.pages?.flatMap(x => x.fakeNews) ?? [])
     return (
         <div>
-            <div className="flex flex-row justify-between flex-wrap">
-                <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
-                <div className="m-4">
-                    <Link className="bg-blue-100 enabled:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+            <div className="flex flex-row justify-between items-center flex-wrap gap-4">
+                <h2 className="text-3xl font-bold">Falske Nyheder</h2>
+                <div className="flex flex-col gap-4">
+                    <Link className="btn-primary"
                         href="/title-generator">
                         Opret en falsk nyhed
                     </Link>
+                    <div>
+                        <label htmlFor="fake-news-sorting">Sortering</label>
+                        <select id="fake-news-sorting" defaultValue={props.initialSorting} className="select" onChange={(e) => handleSetSorting(e.target.value)}>
+                            <option value="popular">Mest populære</option>
+                            <option value="latest">Nyeste</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <label htmlFor="fake-news-sorting">Sortering</label>
-                <select id="fake-news-sorting" defaultValue={props.initialSorting} className="select" onChange={(e) => handleSetSorting(e.target.value)}>
-                    <option value="popular">Mest populære</option>
-                    <option value="latest">Nyeste</option>
-                </select>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4 max-w-[2600px] m-auto">
                 {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
@@ -98,7 +98,8 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
 const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const router = useRouter();
     const admin = (router?.query?.admin ?? "false") === "true";
-    const urlObj = new URL(`${BASE_URL}/fake-news/${article.siteId}-${format(article.published, 'yyyy-MM-dd')}-${encodeURIComponent(article.title)}`);
+    const slug = makeArticleSlug(article)
+    const urlObj = new URL(`${BASE_URL}/fake-news/${slug}`);
     if (admin) {
         urlObj.searchParams.append('admin', 'true');
     }

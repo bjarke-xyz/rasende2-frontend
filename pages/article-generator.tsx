@@ -7,6 +7,8 @@ import { API_URL } from "../utils/constants";
 import { FatalError, RetriableError } from "../utils/errors";
 import { ContentEvent, ImageStatus } from "../utils/interfaces";
 import { FakeNewsArticle } from "../components/fake-news-article";
+import { toggleFeatured } from "../api/fake-news";
+import { makeArticleSlug } from "../utils/utils";
 
 const ArticleGenerator: NextPage = () => {
   const router = useRouter();
@@ -15,8 +17,8 @@ const ArticleGenerator: NextPage = () => {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageStatus, setImageStatus] = useState<ImageStatus>("GENERATING")
-  const siteName = router?.query?.siteName ?? "";
-  const title = router?.query?.title ?? "";
+  const siteName = (router?.query?.siteName ?? "").toString();
+  const title = (router?.query?.title ?? "").toString();
   useEffect(() => {
     async function generateContent() {
       if (sseStarted || hasGenerated) return;
@@ -71,22 +73,32 @@ const ArticleGenerator: NextPage = () => {
     }
   });
 
+  function publishFakeNews() {
+    toggleFeatured(siteName, title, null).then((fakeNewsItem) => {
+      if (fakeNewsItem) {
+        const slug = makeArticleSlug(fakeNewsItem)
+        router.push(`/fake-news/${slug}`)
+      }
+    })
+  }
+
   return (
     <div className="m-4">
       <Head>
         <title>
-          {title.toString()} - {siteName.toString()} | Fake News Generator
+          {title} - {siteName} | Falske Nyheder
         </title>
       </Head>
       <FakeNewsArticle generating={imageStatus === 'GENERATING' || sseStarted} article={{
         siteId: 0,
-        siteName: siteName.toString(),
-        title: title.toString(),
+        siteName: siteName,
+        title: title,
         content: content,
         imageUrl: imageUrl,
         published: "",
         votes: 0,
       }} />
+      <button onClick={() => publishFakeNews()} disabled={imageStatus === 'GENERATING' || sseStarted} className="btn-primary">Udgiv falsk nyhed</button>
     </div>
   );
 };

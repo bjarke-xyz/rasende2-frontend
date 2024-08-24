@@ -5,7 +5,7 @@
 
 @layer components {
     .btn-primary {
-        @apply bg-blue-100 enabled:hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900;
+        @apply bg-blue-100 enabled:hover:bg-blue-200 p-2 rounded-md text-slate-900;
     }
 
     .select {

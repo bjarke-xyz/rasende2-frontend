@@ -47,27 +47,23 @@ export function getVotedStorage(siteName: string, title: string): 'up' | 'down' 
     if (value === 'up' || value === 'down') return value
     return null;
 }
-export async function toggleFeatured(siteName: string, title: string) {
-    const password = prompt('password?')
-    if (!password) {
-        alert(':(')
-        return;
-    }
+export async function toggleFeatured(siteName: string, title: string, password: string | null): Promise<FakeNewsItem | null> {
     const formData = new FormData();
-    formData.append('password', password);
+    if (password) {
+        formData.append('password', password);
+    }
     formData.append('siteName', siteName);
     formData.append('title', title);
-    fetch(`${API_URL}/api/set-highlight`, {
+    const resp = await fetch(`${API_URL}/api/set-highlight`, {
         method: "POST",
         body: formData,
-    }).then(async resp => {
-        if (resp.status > 299) {
-            const text = await resp.text();
-            alert(`STATUS: ${resp.status} // ${text}`);
-        }
-    }).catch(error => {
-        alert(error)
     })
+    if (resp.ok) {
+        return await resp.json();
+    } else {
+        console.log('error', resp.status, resp.statusText)
+        return null;
+    }
 }
 
 export async function resetContent(siteName: string, title: string) {
