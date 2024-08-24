@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { Header } from "../components/header";
 import { ThemeProvider } from "../hooks/theme-context";
 import "../styles/globals.css";
+import Head from "next/head";
 
 export type Fueltype = "unleaded95" | "diesel" | "octane100";
 
@@ -13,6 +14,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Head>
+        <link rel="manifest" href="site.webmanifest" />
+      </Head>
       <ThemeProvider>
         <div className="h-screen flex flex-col">
           <Header />
