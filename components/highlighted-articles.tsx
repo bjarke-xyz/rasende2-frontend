@@ -8,11 +8,13 @@ import { FakeNewsVotes } from "./fake-news-votes";
 import { format } from 'date-fns/format'
 import { makeArticleSlug, truncateText } from "../utils/utils";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 export const featuredFakeNewsQueryKey = 'featured-fake-news'
 
 export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFakeNewsResponse | null, limit: number; initialSorting: string }> = (props) => {
+    const { ref, inView } = useInView()
     const router = useRouter();
     const [sorting, setSorting] = useState<string>(props.initialSorting);
     const limit = 5
@@ -51,6 +53,11 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
     if (error) {
         console.log('error getting fake news', error)
     }
+    useEffect(() => {
+        if (inView) {
+            fetchNextPage()
+        }
+    }, [fetchNextPage, inView])
     const handleSetSorting = (sorting: string) => {
         setSorting(sorting);
         router.query.sorting = sorting;
@@ -83,11 +90,12 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
             </div>
             {hasNextPage ? (
                 <button
+                    ref={ref}
                     className="btn-primary"
                     onClick={(e) => fetchNextPage()}
                     disabled={!data || isFetchingNextPage || isFetching}
                 >
-                    Vis mere
+                    {(isFetchingNextPage || isFetching) ? 'Henter falske nyheder...' : 'Vis mere'}
                 </button>
             ) : null}
         </div>
