@@ -143,9 +143,9 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const published = getTimeDifference(article.published)
 
     return (
-        <div className="flex flex-col min-w-[16rem] max-w-[512px] shadow-md rounded-lg dark:bg-slate-700">
+        <div className="flex flex-col min-w-[256px] max-w-[512px] shadow-md rounded-lg dark:bg-slate-700">
             <img
-                className="w-full h-[512px] object-cover"
+                className="w-full h-[384px] object-cover"
                 src={article.imageUrl ?? placeholderImg}
                 onError={() => article.imageUrl = placeholderImg}
                 alt={article.title}
