@@ -8,10 +8,13 @@ import { FakeNewsVotes } from "./fake-news-votes";
 import { format } from 'date-fns/format'
 import { truncateText } from "../utils/utils";
 import Link from "next/link";
+import { useState } from "react";
 
 export const featuredFakeNewsQueryKey = 'featured-fake-news'
 
-export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFakeNewsResponse | null, limit: number }> = (props) => {
+export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFakeNewsResponse | null, limit: number; initialSorting: string }> = (props) => {
+    const router = useRouter();
+    const [sorting, setSorting] = useState<string>(props.initialSorting);
     const limit = 5
     const {
         data,
@@ -22,8 +25,8 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
         isFetchingNextPage,
         status
     } = useInfiniteQuery({
-        queryKey: [featuredFakeNewsQueryKey, limit],
-        queryFn: ({ pageParam }) => getHighlightedFakeNews(limit, pageParam),
+        queryKey: [featuredFakeNewsQueryKey, limit, sorting],
+        queryFn: ({ pageParam }) => getHighlightedFakeNews(limit, pageParam, sorting),
         initialData: () => {
             if (props?.highlightedFakeNews) {
                 return {
@@ -48,15 +51,29 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
     if (error) {
         console.log('error getting fake news', error)
     }
+    const handleSetSorting = (sorting: string) => {
+        setSorting(sorting);
+        router.query.sorting = sorting;
+        router.push(router);
+    }
     const transformedData = (data?.pages?.flatMap(x => x.fakeNews) ?? [])
     return (
         <div>
-            <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
-            <div className="m-4">
-                <Link className="bg-blue-100 enabled:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
-                    href="/title-generator">
-                    Opret en falsk nyhed
-                </Link>
+            <div className="flex flex-row justify-between flex-wrap">
+                <h2 className="text-xl font-bold">Fremhævede falske artikler</h2>
+                <div className="m-4">
+                    <Link className="bg-blue-100 enabled:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+                        href="/title-generator">
+                        Opret en falsk nyhed
+                    </Link>
+                </div>
+            </div>
+            <div>
+                <label htmlFor="fake-news-sorting">Sortering</label>
+                <select id="fake-news-sorting" defaultValue={props.initialSorting} className="select" onChange={(e) => handleSetSorting(e.target.value)}>
+                    <option value="popular">Mest populære</option>
+                    <option value="latest">Nyeste</option>
+                </select>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4 max-w-[2600px] m-auto">
                 {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
@@ -66,7 +83,7 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
             </div>
             {hasNextPage ? (
                 <button
-                    className="bg-blue-100 enabled:hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+                    className="btn-primary"
                     onClick={(e) => fetchNextPage()}
                     disabled={!data || isFetchingNextPage || isFetching}
                 >

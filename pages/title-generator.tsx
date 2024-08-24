@@ -117,7 +117,7 @@ const TitleGenerator: NextPage = () => {
               <label htmlFor="site">Nyhedsmedie</label>
               <select
                 id="site"
-                className="p-1 block border border-solid border-gray-300 rounded-md dark: text-slate-900"
+                className="select"
                 onChange={onSiteChange}
                 disabled={sseStarted}
                 defaultValue={""}
@@ -170,7 +170,7 @@ const TitleGenerator: NextPage = () => {
       <div>
         {site?.length > 0 ? (
           <button
-            className="bg-blue-100 enabled:hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+            className="btn-primary"
             onClick={() => loadMore()}
             disabled={sseStarted}
           >

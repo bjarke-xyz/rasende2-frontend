@@ -15,8 +15,8 @@ export const FakeNewsArticle: React.FC<{ article: FakeNewsItem; admin?: boolean;
             </div>
             {admin ? (
                 <div className="flex flex-row gap-4">
-                    <button onClick={() => toggleFeatured(article.siteName, article.title)} className="bg-green-500 dark:bg-green-700 w-52">Toggle featured</button>
-                    <button onClick={() => resetContent(article.siteName, article.title)} className="bg-green-500 dark:bg-green-700 w-52">Reset content</button>
+                    <button onClick={() => toggleFeatured(article.siteName, article.title)} className="btn-primary">Toggle featured</button>
+                    <button onClick={() => resetContent(article.siteName, article.title)} className="btn-primary">Reset content</button>
                 </div>
             ) : null}
             <h1 className="text-xl font-bold mt-4">{article.title}</h1>

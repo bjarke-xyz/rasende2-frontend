@@ -2,12 +2,13 @@ import { FakeNewsItem, HighlightedFakeNewsResponse } from "../models/rss-item";
 import { API_URL } from "../utils/constants";
 import { isServer } from "../utils/utils";
 
-export async function getHighlightedFakeNews(limit: number, cursor?: string): Promise<HighlightedFakeNewsResponse> {
+export async function getHighlightedFakeNews(limit: number, cursor?: string, sorting = 'popular'): Promise<HighlightedFakeNewsResponse> {
     const searchParams = new URLSearchParams();
     searchParams.append('limit', (limit ?? 2).toString());
     if (cursor) {
         searchParams.append('cursor', cursor)
     }
+    searchParams.append('sorting', sorting);
     const resp = await fetch(`${API_URL}/api/highlighted-fake-news?${searchParams.toString()}`);
     return await resp.json();
 }

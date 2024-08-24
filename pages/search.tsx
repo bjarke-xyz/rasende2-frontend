@@ -66,7 +66,7 @@ const Search: NextPage = () => {
       </div>
       <div className="flex flex-col justify-center mt-16">{pages}</div>
       <button
-        className="bg-blue-100 hover:bg-blue-200 mt-5 p-2 rounded-md text-slate-900"
+        className="btn-primary"
         onClick={() => setCnt(cnt + 1)}
       >
         Hent flere
