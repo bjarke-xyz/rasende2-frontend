@@ -1,5 +1,5 @@
 import { FakeNewsItem, HighlightedFakeNewsResponse } from "../models/rss-item";
-import { API_URL } from "../utils/constants";
+import { API_URL, INTERNAL_API_URL } from "../utils/constants";
 import { isServer } from "../utils/utils";
 
 export async function getHighlightedFakeNews(limit: number, cursor?: string, sorting = 'popular'): Promise<HighlightedFakeNewsResponse> {
@@ -9,7 +9,8 @@ export async function getHighlightedFakeNews(limit: number, cursor?: string, sor
         searchParams.append('cursor', cursor)
     }
     searchParams.append('sorting', sorting);
-    const resp = await fetch(`${API_URL}/api/highlighted-fake-news?${searchParams.toString()}`);
+    const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
+    const resp = await fetch(`${apiUrl}/api/highlighted-fake-news?${searchParams.toString()}`);
     return await resp.json();
 }
 
@@ -17,7 +18,8 @@ export async function getFakeNewsArticle(siteId: number, title: string): Promise
     const searchParams = new URLSearchParams();
     searchParams.append('siteId', siteId.toString());
     searchParams.append('title', title);
-    const resp = await fetch(`${API_URL}/api/fake-news-article?${searchParams.toString()}`);
+    const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
+    const resp = await fetch(`${apiUrl}/api/fake-news-article?${searchParams.toString()}`);
     if (resp.status === 200) {
         return await resp.json();
     } else {
@@ -30,7 +32,8 @@ export async function voteFakeNews(siteName: string, title: string, direction: '
     formData.append('siteName', siteName);
     formData.append('title', title);
     formData.append('direction', direction);
-    const resp = await fetch(`${API_URL}/api/vote-fake-news`, {
+    const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
+    const resp = await fetch(`${apiUrl}/api/vote-fake-news`, {
         method: 'POST',
         body: formData
     });
@@ -54,7 +57,8 @@ export async function toggleFeatured(siteName: string, title: string, password: 
     }
     formData.append('siteName', siteName);
     formData.append('title', title);
-    const resp = await fetch(`${API_URL}/api/set-highlight`, {
+    const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
+    const resp = await fetch(`${apiUrl}/api/set-highlight`, {
         method: "POST",
         body: formData,
     })
@@ -76,7 +80,8 @@ export async function resetContent(siteName: string, title: string) {
     formData.append('password', password);
     formData.append('siteName', siteName);
     formData.append('title', title);
-    fetch(`${API_URL}/api/reset-content`, {
+    const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
+    fetch(`${apiUrl}/api/reset-content`, {
         method: "POST",
         body: formData,
     }).then(async resp => {

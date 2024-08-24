@@ -3,12 +3,12 @@ import { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { API_URL } from "../utils/constants";
+import { API_URL, INTERNAL_API_URL } from "../utils/constants";
 import { FatalError, RetriableError } from "../utils/errors";
 import { ContentEvent, ImageStatus } from "../utils/interfaces";
 import { FakeNewsArticle } from "../components/fake-news-article";
 import { toggleFeatured } from "../api/fake-news";
-import { makeArticleSlug } from "../utils/utils";
+import { isServer, makeArticleSlug } from "../utils/utils";
 
 const ArticleGenerator: NextPage = () => {
   const router = useRouter();
@@ -27,8 +27,9 @@ const ArticleGenerator: NextPage = () => {
       const ctrl = new AbortController();
       const encodedSiteName = encodeURIComponent(siteName.toString());
       const encodedTitle = encodeURIComponent(title.toString());
+      const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
       fetchEventSource(
-        `${API_URL}/api/generate-content?siteName=${encodedSiteName}&title=${encodedTitle}`,
+        `${apiUrl}/api/generate-content?siteName=${encodedSiteName}&title=${encodedTitle}`,
         {
           async onopen(response) {
             if (response.ok) {

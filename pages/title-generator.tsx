@@ -6,9 +6,10 @@ import { useState } from "react";
 import { getSites } from "../api/sites";
 import { Badge } from "../components/badge";
 import { HighlightedArticles } from "../components/highlighted-articles";
-import { API_URL } from "../utils/constants";
+import { API_URL, INTERNAL_API_URL } from "../utils/constants";
 import { FatalError, RetriableError } from "../utils/errors";
 import { ContentEvent } from "../utils/interfaces";
+import { isServer } from "../utils/utils";
 
 const limit = 200;
 
@@ -35,8 +36,9 @@ const TitleGenerator: NextPage = () => {
     setSseStarted(true);
     try {
       const ctrl = new AbortController();
+      const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
       fetchEventSource(
-        `${API_URL}/api/generate-titles?siteName=${siteName}&offset=${limit * page
+        `${apiUrl}/api/generate-titles?siteName=${siteName}&offset=${limit * page
         }&limit=${limit}&temperature=1&cursor=${cursor}`,
         {
           async onopen(response) {

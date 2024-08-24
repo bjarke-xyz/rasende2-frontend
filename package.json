@@ -23,6 +23,7 @@
     "react-intersection-observer": "^9.13.0"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.8",
     "@types/lodash.debounce": "^4.0.7",
     "@types/node": "^22.5.0",
     "@types/react": "^18.3.4",

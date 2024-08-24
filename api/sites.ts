@@ -1,5 +1,7 @@
-import { API_URL } from "../utils/constants";
+import { API_URL, INTERNAL_API_URL } from "../utils/constants";
+import { isServer } from "../utils/utils";
 
 export async function getSites(): Promise<string[]> {
-    return fetch(`${API_URL}/api/sites`).then(resp => resp.json());
+    const apiUrl = isServer() ? INTERNAL_API_URL : API_URL
+    return fetch(`${apiUrl}/api/sites`).then(resp => resp.json());
 }
