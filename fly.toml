@@ -22,7 +22,3 @@ primary_region = 'ams'
   cpus = 1
 
 # NOTE: machine does not start when using fly io internal url, i.e. 'http://rasende2-api.internal'
-[env]
-  NEXT_PUBLIC_API_URL = "https://rasende2-api.bjarke.xyz"
-  NEXT_PUBLIC_INTENRAL_API_URL = "https://rasende2-api.bjarke.xyz"
-  NEXT_PUBLIC_BASE_URL = "https://rasende.bjarke.xyz"
