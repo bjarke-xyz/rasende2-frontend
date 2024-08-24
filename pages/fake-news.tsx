@@ -32,7 +32,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext): Pr
         sorting = 'popular'
     }
     const limit = defaultLimit;
-    const highlightedFakeNews = await getHighlightedFakeNews(limit, undefined, sorting);
+    let highlightedFakeNews: HighlightedFakeNewsResponse | null = null
+    try {
+        highlightedFakeNews = await getHighlightedFakeNews(limit, undefined, sorting);
+    } catch (error) {
+        console.log('error getting server side fake news', error)
+    }
     return {
         props: {
             highlightedFakeNews: highlightedFakeNews,
