@@ -117,14 +117,14 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
     const published = getTimeDifference(article.published)
 
     return (
-        <div className="min-w-[16rem] max-w-[512px] shadow-md rounded-lg dark:bg-slate-700">
+        <div className="flex flex-col min-w-[16rem] max-w-[512px] shadow-md rounded-lg dark:bg-slate-700">
             <img
                 className="w-full h-[512px] object-cover"
                 src={article.imageUrl ?? placeholderImg}
                 onError={() => article.imageUrl = placeholderImg}
                 alt={article.title}
             />
-            <div className="p-4 flex flex-col">
+            <div className="p-4 flex flex-col flex-1">
                 <div className="flex items-center justify-between mb-2">
                     <span className="bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                         {article.siteName}
@@ -138,7 +138,7 @@ const ArticleCard: React.FC<{ article: FakeNewsItem }> = ({ article }) => {
                         {article.title}
                     </a>
                 </h2>
-                <p className="text-gray-600 dark:text-gray-200 mt-2">{contentPreview}</p>
+                <p className="text-gray-600 dark:text-gray-200 mt-2 mb-auto">{contentPreview}</p>
                 <div className="flex flex-row gap-4 justify-between content-end">
                     <a
                         href={url}
