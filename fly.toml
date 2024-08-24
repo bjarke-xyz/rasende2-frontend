@@ -22,3 +22,7 @@ primary_region = 'ams'
   cpus = 1
 
 # NOTE: machine does not start when using fly io internal url, i.e. 'http://rasende2-api.internal'
+
+[metrics]
+port = 3000
+path = "/api/metrics"
