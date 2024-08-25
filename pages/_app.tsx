@@ -16,6 +16,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <Head>
         <link rel="manifest" href="site.webmanifest" />
+        <script data-goatcounter="https://rasende2.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
       </Head>
       <ThemeProvider>
         <div className="h-screen flex flex-col">
