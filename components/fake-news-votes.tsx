@@ -35,6 +35,7 @@ export const FakeNewsVotes: React.FC<{ fakeNews: FakeNewsItem }> = ({ fakeNews }
     return (
         <div className="flex items-center space-x-4">
             <button
+                disabled={userVote === 'up'}
                 onClick={() => handleVote('up')}
                 className={`text-2xl ${userVote === 'up' ? 'text-green-500' : 'text-gray-400'
                     }`}
@@ -43,6 +44,7 @@ export const FakeNewsVotes: React.FC<{ fakeNews: FakeNewsItem }> = ({ fakeNews }
             </button>
             <span className="text-lg font-semibold">{votes}</span>
             <button
+                disabled={userVote === 'down'}
                 onClick={() => handleVote('down')}
                 className={`text-2xl ${userVote === 'down' ? 'text-red-500' : 'text-gray-400'
                     }`}
