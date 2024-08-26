@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { getHighlightedFakeNews } from "../api/fake-news";
 import { FakeNewsItem, HighlightedFakeNewsResponse } from "../models/rss-item";
 import { BASE_URL, placeholderImg } from "../utils/constants";
@@ -10,6 +10,7 @@ import { makeArticleSlug, truncateText } from "../utils/utils";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import React from "react";
 
 export const featuredFakeNewsQueryKey = 'featured-fake-news'
 
@@ -25,7 +26,7 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
         hasNextPage,
         isFetching,
         isFetchingNextPage,
-        status
+        status,
     } = useInfiniteQuery({
         queryKey: [featuredFakeNewsQueryKey, limit, sorting],
         queryFn: ({ pageParam }) => getHighlightedFakeNews(limit, pageParam, sorting),
@@ -58,12 +59,11 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
             fetchNextPage()
         }
     }, [fetchNextPage, inView])
-    const handleSetSorting = (sorting: string) => {
-        setSorting(sorting);
-        router.query.sorting = sorting;
+    const handleSetSorting = (newSorting: string) => {
+        setSorting(newSorting);
+        router.query.sorting = newSorting;
         router.push(router);
     }
-    const transformedData = (data?.pages?.flatMap(x => x.fakeNews) ?? [])
     return (
         <div>
             <div className="flex flex-row justify-between items-center flex-wrap gap-4">
@@ -75,7 +75,7 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
                     </Link>
                     <div>
                         <label htmlFor="fake-news-sorting">Sortering</label>
-                        <select id="fake-news-sorting" defaultValue={props.initialSorting} className="select" onChange={(e) => handleSetSorting(e.target.value)}>
+                        <select id="fake-news-sorting" value={sorting} className="select" onChange={(e) => handleSetSorting(e.target.value)}>
                             <option value="popular">Mest populære</option>
                             <option value="latest">Nyeste</option>
                         </select>
@@ -86,11 +86,20 @@ export const HighlightedArticles: React.FC<{ highlightedFakeNews: HighlightedFak
                 {status === 'pending' ? <p>Henter fremhævede artikler...</p> : null}
                 {status === 'error' ? <p>Kunne ikke hente fremhævede artikler</p> : null}
                 {status === 'success' && data?.pages?.length === 0 ? <p>Ingen fremhævede artikler endnu...</p> : null}
-                {status === 'success' && transformedData ? transformedData.map(article => <ArticleCard key={article.title} article={article} />) : null}
+                {status === 'success' && data?.pages?.length > 0 ? (
+                    data.pages.map((page, pageIndex) => (
+                        <React.Fragment key={pageIndex}>
+                            {page.fakeNews.map(article => (
+                                <ArticleCard key={`${article.siteId}-${article.title}`} article={article} />
+                            ))}
+                        </React.Fragment>
+                    ))
+                )
+                    : null}
             </div>
             {hasNextPage ? (
                 <button
-                    ref={ref}
+                    // ref={ref}
                     className="btn-primary"
                     onClick={(e) => fetchNextPage()}
                     disabled={!data || isFetchingNextPage || isFetching}
