@@ -4,6 +4,7 @@ import { Header } from "../components/header";
 import { ThemeProvider } from "../hooks/theme-context";
 import "../styles/globals.css";
 import Head from "next/head";
+import Script from "next/script";
 
 export type Fueltype = "unleaded95" | "diesel" | "octane100";
 
@@ -16,9 +17,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <Head>
         <link rel="manifest" href="site.webmanifest" />
-        <script data-goatcounter="https://rasende2.goatcounter.com/count"
-          async src="//gc.zgo.at/count.js"></script>
       </Head>
+      <Script data-goatcounter="https://rasende2.goatcounter.com/count" async src="//gc.zgo.at/count.js" />
       <ThemeProvider>
         <div className="h-screen flex flex-col">
           <Header />
